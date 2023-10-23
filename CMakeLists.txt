@@ -3,4 +3,5 @@ project(longhorn_library_2024)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(longhorn_library_2024 library.cpp)
+add_library(longhorn_library_2024 library.cpp
+        can_ids.h)
