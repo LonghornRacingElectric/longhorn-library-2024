@@ -21,18 +21,18 @@
 
 // Interface
 
-typedef struct canRx {
+typedef struct CanRx {
     bool isRecent;
     uint8_t dlc;
     uint8_t data[8];
-} canRx;
+} CanRx;
 
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
  * @param id ID of the CAN packets.
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailbox(uint32_t id, canRx* mailbox);
+void can_addMailbox(uint32_t id, CanRx* mailbox);
 
 /**
  * Empty the Rx FIFO and update the corresponding mailboxes.

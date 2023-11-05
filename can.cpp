@@ -1,7 +1,7 @@
 #include "can.h"
 
 
-void can_addMailbox(uint32_t id, canRx* mailbox);
+void can_addMailbox(uint32_t id, CanRx* mailbox);
 
 void can_processRxFifo();
 
