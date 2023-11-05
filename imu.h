@@ -1,0 +1,32 @@
+#ifndef LONGHORN_LIBRARY_2024_IMU_H
+#define LONGHORN_LIBRARY_2024_IMU_H
+
+#include "eeprom.h"
+
+typedef struct xyz {
+    float x;
+    float y;
+    float z;
+} xyz;
+
+/**
+ * Initialize IMU.
+ */
+void imu_init();
+
+/**
+ * Calibrate all 3 axes using gravity as a ground truth.
+ */
+void imu_calibrate();
+
+/**
+ * Get adjusted acceleration XYZ.
+ */
+xyz imu_getAccel();
+
+/**
+ * Get rotational velocity XYZ.
+ */
+xyz imu_getGyro();
+
+#endif //LONGHORN_LIBRARY_2024_IMU_H
