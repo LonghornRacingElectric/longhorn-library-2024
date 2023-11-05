@@ -1,9 +1,9 @@
-//
-// Created by yashk on 10/22/2023.
-//
+#ifndef LONGHORN_LIBRARY_2024_CAN_H
+#define LONGHORN_LIBRARY_2024_CAN_H
 
-#ifndef LONGHORN_LIBRARY_2024_CAN_IDS_H
-#define LONGHORN_LIBRARY_2024_CAN_IDS_H
+#include <stdint.h>
+
+// CAN IDs
 
 #define INV_TEMP1_DATA 0x0A0 //Stores inverter module temperature
 #define INV_TEMP3_DATA 0x0A2 //Stores motor temperature
@@ -18,4 +18,30 @@
 #define VCU_INV_PARAMETER_RW 0x0C1 //Sets inverter parameter r/w
 #define INV_VCU_RESPONSE_RW 0x0C2 //Responds back success of parameter r/w
 
-#endif //LONGHORN_LIBRARY_2024_CAN_IDS_H
+
+// Interface
+
+typedef struct canRx {
+    bool isRecent;
+    uint8_t dlc;
+    uint8_t data[8];
+} canRx;
+
+/**
+ * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
+ * @param id ID of the CAN packets.
+ * @param mailbox Pointer to where the incoming packet is stored.
+ */
+void can_addMailbox(uint32_t id, canRx* mailbox);
+
+/**
+ * Empty the Rx FIFO and update the corresponding mailboxes.
+ */
+void can_processRxFifo();
+
+/**
+ * Put a CAN packet in the Tx FIFO.
+ */
+void can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
+
+#endif //LONGHORN_LIBRARY_2024_CAN_H

@@ -3,5 +3,7 @@ project(longhorn_library_2024)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(longhorn_library_2024 library.cpp
-        can_ids.h)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true *.h *.cpp)
+set(SOURCES ${SOURCES})
+
+add_library(longhorn_library_2024 ${SOURCES})
