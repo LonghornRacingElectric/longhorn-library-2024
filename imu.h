@@ -22,11 +22,11 @@ void imu_calibrate();
 /**
  * Get adjusted acceleration XYZ.
  */
-xyz imu_getAccel();
+void imu_getAccel(xyz* vec);
 
 /**
  * Get rotational velocity XYZ.
  */
-xyz imu_getGyro();
+void imu_getGyro(xyz* vec);
 
 #endif //LONGHORN_LIBRARY_2024_IMU_H

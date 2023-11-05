@@ -8,10 +8,10 @@ void imu_calibrate() {
     // TODO implement
 }
 
-xyz imu_getAccel() {
+void imu_getAccel(xyz* vec) {
     // TODO implement
 }
 
-xyz imu_getGyro() {
+void imu_getGyro(xyz* vec) {
     // TODO implement
 }
