@@ -18,6 +18,12 @@
 #define VCU_INV_PARAMETER_RW 0x0C1 //Sets inverter parameter r/w
 #define INV_VCU_RESPONSE_RW 0x0C2 //Responds back success of parameter r/w
 
+#define VCU_HVC_PARAMS 0x0F0
+#define VCU_PDU_PARAMS 0x0F1
+
+#define HVC_VCU_CELL_VOLTAGES_START 0x300 // 0x300-0x37F
+#define HVC_VCU_CELL_TEMPS_START 0x380 // 0x380-0x3FF
+
 
 // Interface
 
