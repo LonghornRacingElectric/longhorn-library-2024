@@ -24,6 +24,7 @@
 #define HVC_VCU_CELL_VOLTAGES_START 0x300 // 0x300-0x37F
 #define HVC_VCU_CELL_TEMPS_START 0x380 // 0x380-0x3FF
 
+#define HVC_VCU_AMS_IMD 0x001
 
 // Interface
 
