@@ -2,7 +2,6 @@
 #define LONGHORN_LIBRARY_2024_CAN_H
 
 #include <cstdint>
-#include <unordered_map>
 // CAN IDs
 // Inverter predefined CAN IDs
 #define INV_TEMP1_DATA 0x0A0 //Stores inverter module temperature
@@ -41,14 +40,21 @@ typedef struct CanRx {
     uint8_t data[8];
 } CanRx;
 
-extern std::unordered_map<uint16_t, CanRx*> can_mailboxes;
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
  * Mailbox must be pre-defined
- * @param id ID of the CAN packets.
+ * @param id ID of the CAN packets you want to add
+ * @param mask Mask of the CAN packets you want to add
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailbox(uint16_t id, CanRx* mailbox);
+void can_addMailbox(uint16_t id, uint16_t mask, CanRx* mailbox);
+
+/**
+ * Get the mailbox associated with the ID
+ * @param id ID of the CAN packet.
+ * @return Pointer to the associated mailbox, returns null if it doesn't exist
+ */
+CanRx* can_getMailbox(uint16_t id);
 
 /**
  * Empty the Rx FIFO and update the corresponding mailboxes.

@@ -1,8 +1,11 @@
 #include "can.h"
+#include <unordered_map>
+#include <unordered_set>
 
-std::unordered_map<uint16_t, CanRx*> can_mailboxes;
+static std::unordered_map<uint16_t, CanRx*> can_mailboxes;
+static std::unordered_set<uint16_t> can_masks;
 
-void can_addMailbox(uint16_t id, CanRx* mailbox){
+void can_addMailbox(uint16_t id, uint16_t mask, CanRx* mailbox){
   if(id > 0x7FF){
     return;
   }
@@ -10,7 +13,25 @@ void can_addMailbox(uint16_t id, CanRx* mailbox){
     return;
   }
 
-  can_mailboxes[id] = mailbox;
+  can_mailboxes.insert({id & mask, mailbox});
+  can_masks.insert(mask);
+
+}
+
+CanRx* can_getMailbox(uint16_t id){
+  if(id > 0x7FF){
+    return nullptr;
+  }
+  if (can_mailboxes.find(id) == can_mailboxes.end()) {
+    for (auto mask : can_masks) {
+      if ((id & mask) == mask) {
+        return can_mailboxes.at(mask);
+      }
+    }
+    return nullptr;
+  }
+
+  return can_mailboxes.at(id);
 }
 
 void can_processRxFifo(){
