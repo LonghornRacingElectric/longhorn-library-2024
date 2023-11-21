@@ -59,7 +59,7 @@ CanRx* can_getMailbox(uint16_t id);
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
  */
-void can_processRxFifo(uint8_t RxData[8], uint16_t id, uint8_t dlc);
+void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc, uint32_t fault);
 
 /**
  * Clear the recency of the mailboxes.

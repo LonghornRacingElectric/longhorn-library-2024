@@ -49,8 +49,12 @@ bool check_fault(const uint32_t* fault_vector, uint32_t fault);
 #define FAULT_VCU_TRACTION_CTRL 0x00000020
 #define FAULT_VCU_TRACK_POSITION 0x00000040
 /**
- *
+ * These are faults for when parameters are failed to be set.
  */
+#define FAULT_VCU_INVPARAMS 0x00000100
+#define FAULT_VCU_HVCPARAMS 0x00000200
+#define FAULT_VCU_PDUPARAMS 0x00000400
+#define FAULT_VCU_DASHPARAMS 0x00000800
 /**
  * These are local communication faults, where data cannot be properly validated with this device / protocol. See schematic for VCU.
  * This includes receive / send errors, data corruption, and data timeouts.

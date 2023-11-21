@@ -1,8 +1,8 @@
 #include "can.h"
+#include "faults.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
-#include <iterator>
 using namespace std;
 
 static unordered_map<uint16_t, CanRx*> can_mailboxes;
@@ -37,7 +37,7 @@ CanRx* can_getMailbox(uint16_t id){
   return can_mailboxes.at(id);
 }
 
-void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc){
+void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc, uint32_t fault){
     CanRx* this_mailbox = can_getMailbox(id);
     if(this_mailbox != nullptr){
         copy(RxData, RxData + dlc, this_mailbox->data);
