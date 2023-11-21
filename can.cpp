@@ -2,12 +2,17 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
-#include "fdcan.h"
 
 using namespace std;
 
 static unordered_map<uint16_t, CanRx*> can_mailboxes;
 static unordered_set<uint16_t> can_masks;
+static FDCAN_HandleTypeDef* fdcanHandle;
+
+uint32_t can_init(FDCAN_HandleTypeDef* handle) {
+    fdcanHandle = handle;
+    return HAL_FDCAN_Start(fdcanHandle);
+}
 
 void can_addMailbox(uint16_t id, uint16_t mask, CanRx* mailbox){
   if(id > 0x7FF){
@@ -43,7 +48,7 @@ uint32_t can_processRxFifo() {
 
     uint8_t RxData[8];
     can_clearMailboxes();
-    while (HAL_FDCAN_GetRxMessage(&hfdcan2, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
+    while (HAL_FDCAN_GetRxMessage(fdcanHandle, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
         uint32_t id = RxHeader.Identifier;
         uint32_t dlc = RxHeader.DataLength;
         CanRx* this_mailbox = can_getMailbox(id);
@@ -54,8 +59,8 @@ uint32_t can_processRxFifo() {
         }
     }
     // If error code is something other than the fifo being cleared, set fault
-    if(hfdcan2.ErrorCode != HAL_FDCAN_ERROR_NONE && hfdcan2.ErrorCode != HAL_FDCAN_ERROR_FIFO_EMPTY){
-        return hfdcan2.ErrorCode;
+    if(fdcanHandle->ErrorCode != HAL_FDCAN_ERROR_NONE && fdcanHandle->ErrorCode != HAL_FDCAN_ERROR_FIFO_EMPTY){
+        return fdcanHandle->ErrorCode;
     }
     return 0;
 }
@@ -78,8 +83,8 @@ uint32_t can_send(uint16_t id, uint8_t dlc, uint8_t data[8]) {
     TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
     TxHeader.MessageMarker = 0;
 
-    if(HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &TxHeader, data) != HAL_OK){
-        return hfdcan2.ErrorCode;
+    if(HAL_FDCAN_AddMessageToTxFifoQ(fdcanHandle, &TxHeader, data) != HAL_OK){
+        return fdcanHandle->ErrorCode;
     }
     return 0;
 }

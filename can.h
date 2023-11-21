@@ -2,6 +2,8 @@
 #define LONGHORN_LIBRARY_2024_CAN_H
 
 #include <stdint.h>
+#include "fdcan.h"
+
 // CAN IDs
 // Inverter predefined CAN IDs
 #define INV_TEMP1_DATA 0x0A0 //Stores inverter module temperature
@@ -39,6 +41,8 @@ typedef struct CanRx {
     uint8_t dlc;
     uint8_t data[8];
 } CanRx;
+
+uint32_t can_init(FDCAN_HandleTypeDef* handle);
 
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
