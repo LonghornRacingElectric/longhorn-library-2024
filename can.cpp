@@ -1,8 +1,8 @@
 #include "can.h"
+#include "faults.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
-#include <iterator>
 using namespace std;
 
 static unordered_map<uint16_t, CanRx*> can_mailboxes;
@@ -37,7 +37,7 @@ CanRx* can_getMailbox(uint16_t id){
   return can_mailboxes.at(id);
 }
 
-void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc){
+void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc, uint32_t fault){
     CanRx* this_mailbox = can_getMailbox(id);
     if(this_mailbox != nullptr){
         copy(RxData, RxData + dlc, this_mailbox->data);
@@ -54,20 +54,18 @@ void can_clearMailboxes(){
 
 void can_send(uint16_t id, uint8_t dlc, uint8_t data[8]);
 
-template<typename T>
-void can_read_packet(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte, T& dest){
+uint64_t can_read_packet(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte){
   if (start_byte > end_byte || end_byte > 7 || start_byte > 7) {
-    return;
+    return 0;
   }
   uint64_t value = 0;
   for(int i = start_byte; i <= end_byte; i++){
-    value |= static_cast<uint64_t>(data[i]) << (8 * (i - start_byte));;
+    value |= static_cast<uint64_t>(data[i]) << (8 * (i - start_byte));
   }
-  dest = static_cast<T>(value);
+  return value;
 }
 
-template<typename U>
-void can_write_packet(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, U value){
+void can_write_packet(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value){
   if (start_byte > end_byte || end_byte > 7 || start_byte > 7) {
     return;
   }

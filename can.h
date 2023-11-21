@@ -59,7 +59,7 @@ CanRx* can_getMailbox(uint16_t id);
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
  */
-void can_processRxFifo(uint8_t RxData[8], uint16_t id, uint8_t dlc);
+void can_processRxFifo(uint8_t* RxData, uint16_t id, uint8_t dlc, uint32_t fault);
 
 /**
  * Clear the recency of the mailboxes.
@@ -75,14 +75,12 @@ void can_send(uint16_t id, uint8_t dlc, uint8_t data[8]);
  * Read a parameter from the packet, specifying which bytes to read.
  * This assumes that the packets are little endian, which is the standard set in CM200dz
  */
-template <typename T>
-void can_read_packet(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte, T& dest);
+uint64_t can_read_packet(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte);
 
 /**
  * Write a parameter to the packet, specifying which bytes to write.
  * This assumes that the packets are little endian, which is the standard set in CM200dz
  */
-template<typename U>
-void can_write_packet(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, U value);
+void can_write_packet(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value);
 
 #endif //LONGHORN_LIBRARY_2024_CAN_H
