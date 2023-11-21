@@ -1,7 +1,7 @@
 #ifndef LONGHORN_LIBRARY_2024_CAN_H
 #define LONGHORN_LIBRARY_2024_CAN_H
 
-#include <cstdint>
+#include <stdint.h>
 // CAN IDs
 // Inverter predefined CAN IDs
 #define INV_TEMP1_DATA 0x0A0 //Stores inverter module temperature
