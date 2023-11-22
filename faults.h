@@ -14,28 +14,32 @@ extern uint32_t dash_fault_vector;
  * @param fault_vector
  * @param fault
  */
-void fault_set(uint32_t* fault_vector, uint32_t fault);
+// void fault_set(uint32_t* fault_vector, uint32_t fault);
+#define FAULT_SET(fault_vector, fault) (*(fault_vector) |= (fault))
 
 /**
  * Clear a fault bit in the fault vector.
  * @param fault_vector
  * @param fault
  */
-void fault_clear(uint32_t* fault_vector, uint32_t fault);
+// void fault_clear(uint32_t* fault_vector, uint32_t fault);
+#define FAULT_CLEAR(fault_vector, fault) (*(fault_vector) &= ~(fault))
 
 /**
  * Clear all fault bits in the fault vector.
  * @param fault_vector
  */
-void fault_clearAll(uint32_t* fault_vector);
+// void fault_clearAll(uint32_t* fault_vector);
+#define FAULT_CLEARALL(fault_vector) (*(fault_vector) = 0)
 
 /**
  * Check if a fault bit is set in the fault vector.
  * @param fault_vector
  * @param fault
- * @return true if fault is set
+ * @return true if fault is set, false otherwise
  */
-bool fault_check(const uint32_t* fault_vector, uint32_t fault);
+// bool fault_check(const uint32_t* fault_vector, uint32_t fault);
+#define FAULT_CHECK(fault_vector, fault) ((*(fault_vector) & (fault)) != 0)
 
 // VCU FAULTS
 /**
