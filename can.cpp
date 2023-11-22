@@ -9,6 +9,56 @@ static unordered_map<uint16_t, CanRx*> can_mailboxes;
 static unordered_set<uint16_t> can_masks;
 static FDCAN_HandleTypeDef* fdcanHandle;
 
+uint8_t dlc_to_num(uint32_t dlc){
+  switch(dlc){
+    case FDCAN_DLC_BYTES_0:
+      return 0;
+    case FDCAN_DLC_BYTES_1:
+      return 1;
+    case FDCAN_DLC_BYTES_2:
+      return 2;
+    case FDCAN_DLC_BYTES_3:
+      return 3;
+    case FDCAN_DLC_BYTES_4:
+      return 4;
+    case FDCAN_DLC_BYTES_5:
+      return 5;
+    case FDCAN_DLC_BYTES_6:
+      return 6;
+    case FDCAN_DLC_BYTES_7:
+      return 7;
+    case FDCAN_DLC_BYTES_8:
+      return 8;
+    default:
+      return 0;
+  }
+}
+
+uint32_t num_to_dlc(uint8_t num){
+  switch(num){
+    case 0:
+      return FDCAN_DLC_BYTES_0;
+    case 1:
+      return FDCAN_DLC_BYTES_1;
+    case 2:
+      return FDCAN_DLC_BYTES_2;
+    case 3:
+      return FDCAN_DLC_BYTES_3;
+    case 4:
+      return FDCAN_DLC_BYTES_4;
+    case 5:
+      return FDCAN_DLC_BYTES_5;
+    case 6:
+      return FDCAN_DLC_BYTES_6;
+    case 7:
+      return FDCAN_DLC_BYTES_7;
+    case 8:
+      return FDCAN_DLC_BYTES_8;
+    default:
+      return FDCAN_DLC_BYTES_0;
+  }
+}
+
 uint32_t can_init(FDCAN_HandleTypeDef* handle) {
     fdcanHandle = handle;
     return HAL_FDCAN_Start(fdcanHandle);
@@ -50,7 +100,7 @@ uint32_t can_processRxFifo() {
     can_clearMailboxes();
     while (HAL_FDCAN_GetRxMessage(fdcanHandle, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
         uint32_t id = RxHeader.Identifier;
-        uint32_t dlc = RxHeader.DataLength;
+        uint8_t dlc = dlc_to_num(RxHeader.DataLength);
         CanRx* this_mailbox = can_getMailbox(id);
         if(this_mailbox != nullptr){
             copy(RxData, RxData + dlc, this_mailbox->data);
@@ -76,7 +126,7 @@ uint32_t can_send(uint16_t id, uint8_t dlc, uint8_t data[8]) {
     TxHeader.Identifier = id;
     TxHeader.IdType = FDCAN_STANDARD_ID;
     TxHeader.TxFrameType = FDCAN_DATA_FRAME;
-    TxHeader.DataLength = dlc;
+    TxHeader.DataLength = num_to_dlc(dlc);
     TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
     TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
     TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
