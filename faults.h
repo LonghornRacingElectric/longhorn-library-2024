@@ -59,14 +59,16 @@ bool fault_check(const uint32_t* fault_vector, uint32_t fault);
  * These are local communication faults, where data cannot be properly validated with this device / protocol. See schematic for VCU.
  * This includes receive / send errors, data corruption, and data timeouts.
  */
+#define FAULT_VCU_ADC 0x00001000
+#define FAULT_VCU_CAN 0x00002000
+#define FAULT_VCU_SPI 0x00004000
+#define FAULT_VCU_UART 0x00008000
 #define FAULT_VCU_EEPROM 0x00010000
 #define FAULT_VCU_IMU 0x00020000
 #define FAULT_VCU_NVM 0x00040000
 #define FAULT_VCU_CELL 0x00080000
 #define FAULT_VCU_BSPD 0x00100000
-#define FAULT_VCU_CAN 0x00200000
-#define FAULT_VCU_SPI 0x00400000
-#define FAULT_VCU_UART 0x00800000
+
 /**
  * These are external communication faults, where data cannot be properly validated with this enclosure / board through CAN. See car lmao.
  */

@@ -6,7 +6,7 @@ uint32_t pdu_fault_vector = 0;
 uint32_t hvc_fault_vector = 0;
 uint32_t dash_fault_vector = 0;
 
-void set_fault(uint32_t* fault_vector, uint32_t fault) {
+void fault_set(uint32_t* fault_vector, uint32_t fault) {
   *fault_vector |= fault;
 }
 
