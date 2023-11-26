@@ -59,18 +59,17 @@ uint32_t can_init(FDCAN_HandleTypeDef* handle);
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
  * Mailbox must be pre-defined
- * @param id ID of the CAN packets you want to add
- * @param mask Mask of the CAN packets you want to add
+ * @param id ID of the CAN packet you want to add
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailbox(uint16_t id, uint16_t mask, CanRx* mailbox);
+void can_addMailbox(uint32_t id, CanRx* mailbox);
 
 /**
  * Get the mailbox associated with the ID
  * @param id ID of the CAN packet.
  * @return Pointer to the associated mailbox, returns null if it doesn't exist
  */
-CanRx* can_getMailbox(uint16_t id);
+static CanRx* can_getMailbox(uint32_t id);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
@@ -85,7 +84,7 @@ void can_clearMailboxes();
 /**
  * Put a CAN packet in the Tx FIFO.
  */
-uint32_t can_send(uint16_t id, uint8_t dlc, uint8_t data[8]);
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
 
 /**
  * Read a parameter from the packet, specifying which bytes to read.
