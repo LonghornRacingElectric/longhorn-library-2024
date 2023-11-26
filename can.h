@@ -65,6 +65,14 @@ uint32_t can_init(FDCAN_HandleTypeDef* handle);
 void can_addMailbox(uint32_t id, CanRx* mailbox);
 
 /**
+ * Tell the CAN driver to copy all incoming packets with a given ID range to the given mailbox array.
+ * Mailbox is a pointer to an array of CanRx where the first element corresponds to the first ID in the range.
+ * @param id ID of the CAN packet you want to add
+ * @param mailbox Pointer to where the incoming packet is stored.
+ */
+void can_addMailboxes(uint32_t idLow, uint32_t idHigh, CanRx* mailboxes);
+
+/**
  * Get the mailbox associated with the ID
  * @param id ID of the CAN packet.
  * @return Pointer to the associated mailbox, returns null if it doesn't exist

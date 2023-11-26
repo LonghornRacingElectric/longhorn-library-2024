@@ -71,6 +71,12 @@ void can_addMailbox(uint32_t id, CanRx *mailbox) {
     can_mailboxes.insert({id, mailbox});
 }
 
+void can_addMailboxes(uint32_t idLow, uint32_t idHigh, CanRx *mailboxes) {
+    for(uint32_t i = idLow; i <= idHigh; i++) {
+        can_addMailbox(i, &mailboxes[i - idLow]);
+    }
+}
+
 static CanRx *can_getMailbox(uint32_t id) {
     if (can_mailboxes.find(id) == can_mailboxes.end()) {
         return nullptr;
