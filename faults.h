@@ -14,28 +14,32 @@ extern uint32_t dash_fault_vector;
  * @param fault_vector
  * @param fault
  */
-void fault_set(uint32_t* fault_vector, uint32_t fault);
+// void fault_set(uint32_t* fault_vector, uint32_t fault);
+#define FAULT_SET(fault_vector, fault) (*(fault_vector) |= (fault))
 
 /**
  * Clear a fault bit in the fault vector.
  * @param fault_vector
  * @param fault
  */
-void fault_clear(uint32_t* fault_vector, uint32_t fault);
+// void fault_clear(uint32_t* fault_vector, uint32_t fault);
+#define FAULT_CLEAR(fault_vector, fault) (*(fault_vector) &= ~(fault))
 
 /**
  * Clear all fault bits in the fault vector.
  * @param fault_vector
  */
-void fault_clearAll(uint32_t* fault_vector);
+// void fault_clearAll(uint32_t* fault_vector);
+#define FAULT_CLEARALL(fault_vector) (*(fault_vector) = 0)
 
 /**
  * Check if a fault bit is set in the fault vector.
  * @param fault_vector
  * @param fault
- * @return true if fault is set
+ * @return true if fault is set, false otherwise
  */
-bool fault_check(const uint32_t* fault_vector, uint32_t fault);
+// bool fault_check(const uint32_t* fault_vector, uint32_t fault);
+#define FAULT_CHECK(fault_vector, fault) ((*(fault_vector) & (fault)) != 0)
 
 // VCU FAULTS
 /**
@@ -59,14 +63,16 @@ bool fault_check(const uint32_t* fault_vector, uint32_t fault);
  * These are local communication faults, where data cannot be properly validated with this device / protocol. See schematic for VCU.
  * This includes receive / send errors, data corruption, and data timeouts.
  */
+#define FAULT_VCU_ADC 0x00001000
+#define FAULT_VCU_CAN 0x00002000
+#define FAULT_VCU_SPI 0x00004000
+#define FAULT_VCU_UART 0x00008000
 #define FAULT_VCU_EEPROM 0x00010000
 #define FAULT_VCU_IMU 0x00020000
 #define FAULT_VCU_NVM 0x00040000
 #define FAULT_VCU_CELL 0x00080000
 #define FAULT_VCU_BSPD 0x00100000
-#define FAULT_VCU_CAN 0x00200000
-#define FAULT_VCU_SPI 0x00400000
-#define FAULT_VCU_UART 0x00800000
+
 /**
  * These are external communication faults, where data cannot be properly validated with this enclosure / board through CAN. See car lmao.
  */

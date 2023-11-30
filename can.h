@@ -29,6 +29,9 @@
 
 // VCU CAN IDs
 #define VCU_DASH_FAULT_INFO 0x110 //Sends out VCU fault info to dash
+#define VCU_PDU_BRAKELIGHT 0x120 //Sends out brake light info to PDU
+#define VCU_PDU_HORN 0x121 //Sends out horn info to PDU
+#define VCU_PDU_COOLING 0x122 //Sends out cooling info to PDU
 
 //Parameters to set to boards (unused currently)
 #define VCU_HVC_PARAMS 0x0F0
@@ -41,6 +44,15 @@
 #define HVC_VCU_CELL_TEMPS_START 0x380 // 0x380-0x3FF
 
 #define HVC_VCU_AMS_IMD 0x001
+
+// PDU CAN IDs
+#define PDU_VCU_PING_STATUS 0x400 //Stores VCU ping status
+#define PDU_VCU_TSAL_STATUS 0x401 //Stores TSAL status
+#define PDU_VCU_MS_STATUS 0x402 //Stores master switch status
+#define PDU_LVBATT_INFO 0x410 //Stores BMS info
+#define PDU_WATERCOOL_INFO 0x420 //Stores cooling info
+#define PDU_FANCOOL_INFO 0x421 //Stores battery / radiator fan info
+
 
 // Interface
 
@@ -55,18 +67,25 @@ uint32_t can_init(FDCAN_HandleTypeDef* handle);
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.
  * Mailbox must be pre-defined
- * @param id ID of the CAN packets you want to add
- * @param mask Mask of the CAN packets you want to add
+ * @param id ID of the CAN packet you want to add
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailbox(uint16_t id, uint16_t mask, CanRx* mailbox);
+void can_addMailbox(uint32_t id, CanRx* mailbox);
+
+/**
+ * Tell the CAN driver to copy all incoming packets with a given ID range to the given mailbox array.
+ * Mailbox is a pointer to an array of CanRx where the first element corresponds to the first ID in the range.
+ * @param id ID of the CAN packet you want to add
+ * @param mailbox Pointer to where the incoming packet is stored.
+ */
+void can_addMailboxes(uint32_t idLow, uint32_t idHigh, CanRx* mailboxes);
 
 /**
  * Get the mailbox associated with the ID
  * @param id ID of the CAN packet.
  * @return Pointer to the associated mailbox, returns null if it doesn't exist
  */
-CanRx* can_getMailbox(uint16_t id);
+static CanRx* can_getMailbox(uint32_t id);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
@@ -81,7 +100,7 @@ void can_clearMailboxes();
 /**
  * Put a CAN packet in the Tx FIFO.
  */
-uint32_t can_send(uint16_t id, uint8_t dlc, uint8_t data[8]);
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
 
 /**
  * Read a parameter from the packet, specifying which bytes to read.
