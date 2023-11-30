@@ -4,6 +4,14 @@
 #include <stdint.h>
 #include "fdcan.h"
 
+// TODO conditional compilation for FDCAN stuff later
+#ifdef STM32H7A3xx
+
+#endif
+#ifdef STM32L431xx
+
+#endif
+
 // CAN IDs
 // Inverter predefined CAN IDs
 #define INV_TEMP1_DATA 0x0A0 //Stores inverter module temperature
