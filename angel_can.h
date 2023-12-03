@@ -2,14 +2,15 @@
 #define LONGHORN_LIBRARY_2024_CAN_H
 
 #include <stdint.h>
-#include "fdcan.h"
 
-// TODO conditional compilation for FDCAN stuff later
 #ifdef STM32H7A3xx
-
+#include "fdcan.h"
+#define CAN_HANDLE FDCAN_HandleTypeDef
 #endif
-#ifdef STM32L431xx
 
+#ifdef STM32L431xx
+#include "can.h"
+#define CAN_HANDLE CAN_HandleTypeDef
 #endif
 
 // CAN IDs
@@ -62,7 +63,7 @@ typedef struct CanRx {
     uint8_t data[8];
 } CanRx;
 
-uint32_t can_init(FDCAN_HandleTypeDef* handle);
+uint32_t can_init(CAN_HANDLE* handle);
 
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.

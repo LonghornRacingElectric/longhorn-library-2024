@@ -1,4 +1,4 @@
-#include "can.h"
+#include "angel_can.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
@@ -6,8 +6,9 @@
 using namespace std;
 
 static unordered_map<uint32_t, CanRx *> can_mailboxes;
-static FDCAN_HandleTypeDef *fdcanHandle;
+static CAN_HANDLE *canHandleTypeDef;
 
+#ifdef STM32H7A3xx
 uint8_t dlc_to_num(uint32_t dlc) {
     switch (dlc) {
         case FDCAN_DLC_BYTES_0:
@@ -57,10 +58,17 @@ uint32_t num_to_dlc(uint8_t num) {
             return FDCAN_DLC_BYTES_0;
     }
 }
+#endif
 
-uint32_t can_init(FDCAN_HandleTypeDef *handle) {
-    fdcanHandle = handle;
-    return HAL_FDCAN_Start(fdcanHandle);
+uint32_t can_init(CAN_HANDLE *handle) {
+    canHandleTypeDef = handle;
+
+#ifdef STM32H7A3xx
+    return HAL_FDCAN_Start(canHandleTypeDef);
+#endif
+#ifdef STM32L431xx
+    return HAL_CAN_Start(canHandleTypeDef);
+#endif
 }
 
 void can_addMailbox(uint32_t id, CanRx *mailbox) {
@@ -86,11 +94,11 @@ static CanRx *can_getMailbox(uint32_t id) {
 }
 
 uint32_t can_processRxFifo() {
+#ifdef STM32H7A3xx
     static FDCAN_RxHeaderTypeDef RxHeader;
+    static uint8_t RxData[8];
 
-    uint8_t RxData[8];
-    can_clearMailboxes();
-    while (HAL_FDCAN_GetRxMessage(fdcanHandle, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
+    while (HAL_FDCAN_GetRxMessage(canHandleTypeDef, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
         uint32_t id = RxHeader.Identifier;
         uint8_t dlc = dlc_to_num(RxHeader.DataLength);
         CanRx *this_mailbox = can_getMailbox(id);
@@ -101,9 +109,28 @@ uint32_t can_processRxFifo() {
         }
     }
     // If error code is something other than the fifo being cleared, set fault
-    if (fdcanHandle->ErrorCode != HAL_FDCAN_ERROR_NONE && fdcanHandle->ErrorCode != HAL_FDCAN_ERROR_FIFO_EMPTY) {
-        return fdcanHandle->ErrorCode;
+    if (canHandleTypeDef->ErrorCode != HAL_FDCAN_ERROR_NONE && canHandleTypeDef->ErrorCode != HAL_FDCAN_ERROR_FIFO_EMPTY) {
+        return canHandleTypeDef->ErrorCode;
     }
+#endif
+#ifdef STM32L431xx
+    static CAN_RxHeaderTypeDef RxHeader;
+    static uint8_t RxData[8];
+    while(HAL_CAN_GetRxFifoFillLevel(canHandleTypeDef, CAN_RX_FIFO0)) {
+        if(HAL_CAN_GetRxMessage(canHandleTypeDef, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
+            uint32_t id = (RxHeader.IDE == CAN_ID_EXT) ? RxHeader.ExtId : RxHeader.StdId;
+            uint32_t dlc = RxHeader.DLC;
+            CanRx *this_mailbox = can_getMailbox(id);
+            if (this_mailbox != nullptr) {
+                copy(RxData, RxData + dlc, this_mailbox->data);
+                this_mailbox->isRecent = true;
+                this_mailbox->dlc = dlc;
+            }
+        } else {
+            return canHandleTypeDef->ErrorCode;
+        }
+    }
+#endif
     return 0;
 }
 
@@ -114,6 +141,7 @@ void can_clearMailboxes() {
 }
 
 uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]) {
+#ifdef STM32H7A3xx
     static FDCAN_TxHeaderTypeDef TxHeader;
     TxHeader.Identifier = id;
     TxHeader.IdType = FDCAN_STANDARD_ID;
@@ -125,9 +153,28 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]) {
     TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
     TxHeader.MessageMarker = 0;
 
-    if (HAL_FDCAN_AddMessageToTxFifoQ(fdcanHandle, &TxHeader, data) != HAL_OK) {
-        return fdcanHandle->ErrorCode;
+    if (HAL_FDCAN_AddMessageToTxFifoQ(canHandleTypeDef, &TxHeader, data) != HAL_OK) {
+        return canHandleTypeDef->ErrorCode;
     }
+#endif
+#ifdef STM32L431xx
+    static CAN_TxHeaderTypeDef TxHeader;
+    if(id > 0x7FF) {
+        TxHeader.IDE = CAN_ID_EXT;
+        TxHeader.ExtId = id;
+    } else {
+        TxHeader.IDE = CAN_ID_STD;
+        TxHeader.StdId = id;
+    }
+    TxHeader.DLC = dlc;
+    TxHeader.RTR = CAN_RTR_DATA;
+
+    static uint32_t TxMailbox;
+    if (HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox) != HAL_OK) {
+        return canHandleTypeDef->ErrorCode;
+    }
+#endif
+
     return 0;
 }
 
