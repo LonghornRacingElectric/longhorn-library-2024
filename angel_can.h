@@ -33,6 +33,7 @@
 #define VCU_PDU_BRAKELIGHT 0x120 //Sends out brake light info to PDU
 #define VCU_PDU_HORN 0x121 //Sends out horn info to PDU
 #define VCU_PDU_COOLING 0x122 //Sends out cooling info to PDU
+#define VCU_HVC_COOLING 0x130 //Sends out cooling info to HVC
 
 //Parameters to set to boards (unused currently)
 #define VCU_HVC_PARAMS 0x0F0
@@ -41,10 +42,14 @@
 #define VCU_UPR_PARAMS 0x0F3
 
 // HVC CAN IDs
-#define HVC_VCU_CELL_VOLTAGES_START 0x300 // 0x300-0x37F
-#define HVC_VCU_CELL_TEMPS_START 0x380 // 0x380-0x3FF
+#define HVC_VCU_CELL_VOLTAGES_START 0x380
+#define HVC_VCU_CELL_VOLTAGES_END 0x3AF // 48 assigned packets for voltages
+#define HVC_VCU_CELL_TEMPS_START 0x3B0 //
+#define HVC_VCU_CELL_TEMPS_END 0x3BF // 16 assigned packets for temps
+#define HVC_VCU_PACK_STATUS 0x310 //Stores pack voltage, current, and SOC
+#define HVC_VCU_CONTACTOR_STATUS 0x320 //Stores contactor status
 
-#define HVC_VCU_AMS_IMD 0x001
+#define HVC_VCU_AMS_IMD 0x0E0 //Stores AMS and IMD status
 
 // PDU CAN IDs
 #define PDU_VCU_PING_STATUS 0x400 //Stores VCU ping status
