@@ -47,6 +47,8 @@
 #define HVC_VCU_CELL_TEMPS_START 0x3B0 //
 #define HVC_VCU_CELL_TEMPS_END 0x3BF // 16 assigned packets for temps
 #define HVC_VCU_PACK_STATUS 0x310 //Stores pack voltage, current, and SOC
+#define HVC_VCU_IMU_ACCEL 0x311 // Stores accel data of imu
+#define HVC_VCU_IMU_GYRO 0x312 // Stores gyro data of imu
 #define HVC_VCU_CONTACTOR_STATUS 0x320 //Stores contactor status
 
 #define HVC_VCU_AMS_IMD 0x0E0 //Stores AMS and IMD status
