@@ -9,8 +9,8 @@ typedef struct xyz {
     float z;
 } xyz;
 
-xyz accelData;
-xyz gyroData;
+static xyz accelData;
+static xyz gyroData;
 
 /**
  * Initialize IMU.
