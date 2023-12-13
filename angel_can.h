@@ -29,9 +29,8 @@
 #define INV_VCU_PARAMS_RESPONSE 0x0C2 //Responds back success of parameter r/w
 
 // VCU CAN IDs
-#define VCU_DASH_FAULT_INFO 0x110 //Sends out VCU fault info to dash
 #define VCU_PDU_BRAKELIGHT 0x120 //Sends out brake light info to PDU
-#define VCU_PDU_HORN 0x121 //Sends out horn info to PDU
+#define VCU_PDU_BUZZER 0x121 //Sends out horn info to PDU
 #define VCU_PDU_COOLING 0x122 //Sends out cooling info to PDU
 #define VCU_HVC_COOLING 0x130 //Sends out cooling info to HVC
 
@@ -54,12 +53,8 @@
 #define HVC_VCU_AMS_IMD 0x0E0 //Stores AMS and IMD status
 
 // PDU CAN IDs
-#define PDU_VCU_PING_STATUS 0x400 //Stores VCU ping status
-#define PDU_VCU_TSAL_STATUS 0x401 //Stores TSAL status
-#define PDU_VCU_MS_STATUS 0x402 //Stores master switch status
-#define PDU_LVBATT_INFO 0x410 //Stores BMS info
-#define PDU_WATERCOOL_INFO 0x420 //Stores cooling info
-#define PDU_FANCOOL_INFO 0x421 //Stores battery / radiator fan info
+#define PDU_VCU_LVBAT 0x410 //Stores BMS info
+#define PDU_VCU_THERMAL 0x420 //Stores cooling info
 
 
 // Interface
