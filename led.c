@@ -1,6 +1,12 @@
 #include "led.h"
 #include "tim.h"
 
+void led_init() {
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+}
+
 static void led_setInt(uint8_t r, uint8_t g, uint8_t b) {
     TIM2->CCR1 = r;
     TIM2->CCR2 = g;

@@ -1,6 +1,8 @@
 #ifndef LONGHORN_LIBRARY_2024_LED_H
 #define LONGHORN_LIBRARY_2024_LED_H
 
+void led_init();
+
 /**
  * Set debug LED to given RGB value (0-1 scale).
  * @param r red
