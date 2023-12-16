@@ -26,9 +26,9 @@ void led_rainbow(float deltaTime) {
     static float timer = 0;
 
     timer += deltaTime * 3.0f * 255.0f;
-    if(timer > 1.5f) {
+    if(timer > 3.0f) {
         // one cycle every 1.5 seconds
-        timer -= 1.5f;
+        timer = 0.0f;
     } else {
         return;
     }
@@ -43,5 +43,5 @@ void led_rainbow(float deltaTime) {
         b--;
         r++;
     }
-    led_setInt(r, g, b);
+    led_setInt(r/4, g/2, b/2);
 }
