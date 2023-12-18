@@ -8,9 +8,9 @@ void led_init() {
 }
 
 static void led_setInt(uint8_t r, uint8_t g, uint8_t b) {
-    TIM2->CCR1 = r;
-    TIM2->CCR2 = g;
-    TIM2->CCR3 = b;
+    TIM2->CCR1 = b;
+    TIM2->CCR2 = r;
+    TIM2->CCR3 = g;
 }
 
 void led_set(float r, float g, float b) {
