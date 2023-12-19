@@ -241,7 +241,7 @@ uint32_t can_send_periodic(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t d
         return can_send(id, dlc, data);
     } else { // Timer not expired
         can_periodic_curr_time[id] += delta;
-        return 0;
+        return 2;
     }
 }
 
