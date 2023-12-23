@@ -4,9 +4,9 @@
 #include "eeprom.h"
 
 typedef struct xyz {
-    float x;
-    float y;
-    float z;
+  float x;
+  float y;
+  float z;
 } xyz;
 
 static xyz accelData;
@@ -25,11 +25,18 @@ void imu_calibrate();
 /**
  * Get adjusted acceleration XYZ.
  */
-void imu_getAccel(xyz* vec);
+void imu_getAccel(xyz *accel);
 
 /**
  * Get rotational velocity XYZ.
  */
-void imu_getGyro(xyz* vec);
+void imu_getGyro(xyz *gyro);
+
+/**
+ * Called many times per second.
+ * Send SPI commands to the IMU and check for responses.
+ * Update accelData and gyroData accordingly.
+ */
+void imu_periodic();
 
 #endif //LONGHORN_LIBRARY_2024_IMU_H
