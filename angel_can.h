@@ -28,7 +28,7 @@ uint32_t can_init(CAN_HANDLE* handle);
  * @param id ID of the CAN packet you want to add
  * @param period Period of the CAN packet in milliseconds
  */
-void can_addTimer(uint32_t id, uint32_t period);
+void can_addTxBox(uint32_t id, uint32_t period);
 
 /**
  * Tell the CAN driver to associate the range of IDs with a period (in ms).\n
@@ -37,7 +37,7 @@ void can_addTimer(uint32_t id, uint32_t period);
  * @param idHigh ID of the CAN packet you want to add
  * @param period Period of the CAN packet in milliseconds
  */
-void can_addRangeTimers(uint32_t idLow, uint32_t idHigh, uint32_t period);
+void can_addRangeTxBoxes(uint32_t idLow, uint32_t idHigh, uint32_t period);
 
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.\n
@@ -45,7 +45,7 @@ void can_addRangeTimers(uint32_t idLow, uint32_t idHigh, uint32_t period);
  * @param id ID of the CAN packet you want to add
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailbox(uint32_t id, CanRx* mailbox);
+void can_addRxBox(uint32_t id, CanRx* mailbox);
 
 /**
  * Tell the CAN driver to copy all incoming packets with a given ID range to the given mailbox array.\n
@@ -53,7 +53,7 @@ void can_addMailbox(uint32_t id, CanRx* mailbox);
  * @param id ID of the CAN packet you want to add
  * @param mailbox Pointer to where the incoming packet is stored.
  */
-void can_addMailboxes(uint32_t idLow, uint32_t idHigh, CanRx* mailboxes);
+void can_addRangeRxBoxes(uint32_t idLow, uint32_t idHigh, CanRx* mailboxes);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
@@ -66,15 +66,6 @@ uint32_t can_processRxFifo();
 void can_clearMailboxes();
 
 /**
- * Put a CAN packet in the Tx FIFO, which is guaranteed to be pushed onto the CAN BUS
- * @param id ID of the CAN packet
- * @param dlc Length of the CAN packet
- * @param data Data of the CAN packet
- * @return 0 if successful, 1 if unsuccessful
- */
-uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t* data);
-
-/**
  * Attempts to put in a CAN packet in the Tx FIFO so that it is rate-limited.\n
  * The period of that rate is pre-determined by the ID through can_addTimer or can_addRangeTimers. \n
  * If no rate is set for the ID, the packet is sent without rate-limiting.\n
@@ -84,7 +75,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t* data);
  * @param delta Time in milliseconds between each packet
  * @return 0 if successful, 1 if error, 2 if unsuccessful send
  */
-uint32_t can_send_periodic(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t delta);
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t delta);
 
 /**
  * Read a parameter from the packet, specifying which bytes to read.\n

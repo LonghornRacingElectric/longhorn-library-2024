@@ -11,25 +11,46 @@ static unordered_map<uint32_t, uint32_t> can_periodic_curr_time;
 static CAN_HANDLE *canHandleTypeDef;
 
 /**
- * Get the period associated with the ID
- * @param id ID of the CAN packet.
- * @return Period of the CAN packet in milliseconds, returns 0 if it doesn't exist
+ * Get the current time associated with the transmitting ID
+ * Tells the user how much time has passed since the last transmission of the ID
+ * @param id 11bit number
+ * @return time in milliseconds
  */
-static uint32_t can_getTimer(uint32_t id);
+static uint32_t can_getCurrTime(uint32_t id) {
+    if (can_periodic_curr_time.find(id) == can_periodic_curr_time.end()) {
+        return 0;
+    } else {
+        return can_periodic_curr_time.at(id);
+    }
+}
 
 /**
- * Get the mailbox associated with the ID
- * @param id ID of the CAN packet.
- * @return Pointer to the associated mailbox, returns null if it doesn't exist
+ * Get the period associated with the transmitting ID
+ * Tells the user the maximum rate at which a packet with this ID can be transmitted
+ * @param id 11bit number
+ * @return period in milliseconds
  */
-static CanRx* can_getMailbox(uint32_t id);
+static uint32_t can_getTimer(uint32_t id) {
+    if (can_periodic_timers.find(id) == can_periodic_timers.end()) {
+        return 0;
+    } else {
+        return can_periodic_timers.at(id);
+    }
+}
 
 /**
- * Get the current time associated with the ID
- * @param id ID of the CAN packet.
- * @return Current time of the CAN packet in milliseconds, returns 0 if it doesn't exist
+ * Returns the struct associated with this ID
+ * If no struct is found, returns nullptr
+ * @param id 11bit number
+ * @return CanRx* struct
  */
-static uint32_t can_getCurrTime(uint32_t id);
+static CanRx *can_getMailbox(uint32_t id) {
+    if (can_mailboxes.find(id) == can_mailboxes.end()) {
+        return nullptr;
+    } else {
+        return can_mailboxes.at(id);
+    }
+}
 
 #ifdef STM32H7A3xx
 uint8_t dlc_to_num(uint32_t dlc) {
@@ -93,56 +114,30 @@ uint32_t can_init(CAN_HANDLE *handle) {
     return HAL_CAN_Start(canHandleTypeDef);
 #endif
 }
-void can_addTimer(uint32_t id, uint32_t period) {
+void can_addTxBox(uint32_t id, uint32_t period) {
     if (can_periodic_timers.find(id) != can_periodic_timers.end()) {
         return;
     }
-
     can_periodic_timers.insert({id, period});
     can_periodic_curr_time.insert({id, 0});
 }
 
-void can_addRangeTimers(uint32_t idLow, uint32_t idHigh, uint32_t period) {
+void can_addRangeTxBoxes(uint32_t idLow, uint32_t idHigh, uint32_t period) {
     for(uint32_t i = idLow; i <= idHigh; i++) {
-        can_addTimer(i, period);
+        can_addTxBox(i, period);
     }
 }
 
-void can_addMailbox(uint32_t id, CanRx *mailbox) {
+void can_addRxBox(uint32_t id, CanRx *mailbox) {
     if (can_mailboxes.find(id) != can_mailboxes.end()) {
         return;
     }
-
     can_mailboxes.insert({id, mailbox});
 }
 
-void can_addMailboxes(uint32_t idLow, uint32_t idHigh, CanRx *mailboxes) {
+void can_addRangeRxBoxes(uint32_t idLow, uint32_t idHigh, CanRx *mailboxes) {
     for(uint32_t i = idLow; i <= idHigh; i++) {
-        can_addMailbox(i, &mailboxes[i - idLow]);
-    }
-}
-
-static uint32_t can_getCurrTime(uint32_t id) {
-    if (can_periodic_curr_time.find(id) == can_periodic_curr_time.end()) {
-        return 0;
-    } else {
-        return can_periodic_curr_time.at(id);
-    }
-}
-
-static uint32_t can_getTimer(uint32_t id) {
-    if (can_periodic_timers.find(id) == can_periodic_timers.end()) {
-        return 0;
-    } else {
-        return can_periodic_timers.at(id);
-    }
-}
-
-static CanRx *can_getMailbox(uint32_t id) {
-    if (can_mailboxes.find(id) == can_mailboxes.end()) {
-        return nullptr;
-    } else {
-        return can_mailboxes.at(id);
+        can_addRxBox(i, &mailboxes[i - idLow]);
     }
 }
 
@@ -192,8 +187,14 @@ void can_clearMailboxes() {
         mailbox.second->isRecent = false;
     }
 }
-
-uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t* data) {
+/**
+ * Put a CAN packet in the Tx FIFO, which is guaranteed to be pushed onto the CAN BUS
+ * @param id ID of the CAN packet
+ * @param dlc Length of the CAN packet
+ * @param data Data of the CAN packet
+ * @return 0 if successful, 1 if unsuccessful
+ */
+static uint32_t can_push(uint32_t id, uint8_t dlc, uint8_t* data) {
 #ifdef STM32H7A3xx
     static FDCAN_TxHeaderTypeDef TxHeader;
     TxHeader.Identifier = id;
@@ -231,14 +232,14 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t* data) {
     return 0;
 }
 
-uint32_t can_send_periodic(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t delta){
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t delta){
     uint32_t curr_time = can_getCurrTime(id);
     uint32_t timer = can_getTimer(id);
     if (timer == 0) { // No timer set
-        return can_send(id, dlc, data);
+        return can_push(id, dlc, data);
     } else if (curr_time + delta >= timer) { // Timer expired
         can_periodic_curr_time[id] = 0;
-        return can_send(id, dlc, data);
+        return can_push(id, dlc, data);
     } else { // Timer not expired
         can_periodic_curr_time[id] += delta;
         return 2;
