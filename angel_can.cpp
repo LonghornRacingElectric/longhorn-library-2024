@@ -8,7 +8,7 @@ using namespace std;
 static unordered_map<uint32_t, CanRx *> can_mailboxes;
 static CAN_HANDLE *canHandleTypeDef;
 
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
 uint8_t dlc_to_num(uint32_t dlc) {
     switch (dlc) {
         case FDCAN_DLC_BYTES_0:
@@ -63,7 +63,7 @@ uint32_t num_to_dlc(uint8_t num) {
 uint32_t can_init(CAN_HANDLE *handle) {
     canHandleTypeDef = handle;
 
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     return HAL_FDCAN_Start(canHandleTypeDef);
 #endif
 #ifdef STM32L431xx
@@ -94,7 +94,7 @@ static CanRx *can_getMailbox(uint32_t id) {
 }
 
 uint32_t can_processRxFifo() {
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     static FDCAN_RxHeaderTypeDef RxHeader;
     static uint8_t RxData[8];
 
@@ -141,7 +141,7 @@ void can_clearMailboxes() {
 }
 
 uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]) {
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     static FDCAN_TxHeaderTypeDef TxHeader;
     TxHeader.Identifier = id;
     TxHeader.IdType = FDCAN_STANDARD_ID;
