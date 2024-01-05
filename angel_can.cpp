@@ -98,9 +98,9 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
 
   uint32_t error = HAL_FDCAN_AddMessageToTxFifoQ(canHandleTypeDef, &TxHeader, data);
   if (error != HAL_OK) {
-    if(error == HAL_FDCAN_ERROR_FIFO_FULL) {
+    if(error & HAL_FDCAN_ERROR_FIFO_FULL) {
       // TODO raise fault
-    } else {
+    } else if(error & 0xFF) {
       return canHandleTypeDef->ErrorCode;
     }
   }
@@ -182,9 +182,8 @@ static uint32_t can_processRxFifo() {
       this_mailbox->dlc = dlc;
     }
   }
-  // If error code is something other than the fifo being cleared, set fault
-  if (canHandleTypeDef->ErrorCode != HAL_FDCAN_ERROR_NONE &&
-      canHandleTypeDef->ErrorCode != HAL_FDCAN_ERROR_FIFO_EMPTY) {
+  // If error code is something other than the fifo being empty or full, return error
+  if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_FDCAN_ERROR_NONE) {
     return canHandleTypeDef->ErrorCode;
   }
 #endif
@@ -229,7 +228,7 @@ static uint32_t can_sendAll(float deltaTime) {
 uint32_t can_periodic(float deltaTime) {
   uint32_t error = can_processRxFifo();
   if (error != HAL_OK) {
-    return error;
+    return error; // 0x300
   }
 
   error = can_sendAll(deltaTime);
