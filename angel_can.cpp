@@ -52,8 +52,8 @@ static CanRx *can_getMailbox(uint32_t id) {
     }
 }
 
-#ifdef STM32H7A3xx
-uint8_t dlc_to_num(uint32_t dlc) {
+#ifdef H7_SERIES
+static uint8_t dlc_to_num(uint32_t dlc) {
     switch (dlc) {
         case FDCAN_DLC_BYTES_0:
             return 0;
@@ -78,7 +78,7 @@ uint8_t dlc_to_num(uint32_t dlc) {
     }
 }
 
-uint32_t num_to_dlc(uint8_t num) {
+static uint32_t num_to_dlc(uint8_t num) {
     switch (num) {
         case 0:
             return FDCAN_DLC_BYTES_0;
@@ -107,13 +107,14 @@ uint32_t num_to_dlc(uint8_t num) {
 uint32_t can_init(CAN_HANDLE *handle) {
     canHandleTypeDef = handle;
 
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     return HAL_FDCAN_Start(canHandleTypeDef);
 #endif
 #ifdef STM32L431xx
     return HAL_CAN_Start(canHandleTypeDef);
 #endif
 }
+
 void can_addTxBox(uint32_t id, uint32_t period) {
     if (can_periodic_timers.find(id) != can_periodic_timers.end()) {
         return;
@@ -142,7 +143,7 @@ void can_addRangeRxBoxes(uint32_t idLow, uint32_t idHigh, CanRx *mailboxes) {
 }
 
 uint32_t can_processRxFifo() {
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     static FDCAN_RxHeaderTypeDef RxHeader;
     static uint8_t RxData[8];
 
@@ -187,6 +188,7 @@ void can_clearMailboxes() {
         mailbox.second->isRecent = false;
     }
 }
+
 /**
  * Put a CAN packet in the Tx FIFO, which is guaranteed to be pushed onto the CAN BUS
  * @param id ID of the CAN packet
@@ -195,7 +197,7 @@ void can_clearMailboxes() {
  * @return 0 if successful, 1 if unsuccessful
  */
 static uint32_t can_push(uint32_t id, uint8_t dlc, uint8_t* data) {
-#ifdef STM32H7A3xx
+#ifdef H7_SERIES
     static FDCAN_TxHeaderTypeDef TxHeader;
     TxHeader.Identifier = id;
     TxHeader.IdType = FDCAN_STANDARD_ID;

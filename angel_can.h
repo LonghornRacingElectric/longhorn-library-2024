@@ -4,7 +4,15 @@
 #include <stdint.h>
 #include "angel_can_ids.h"
 
+
+#ifdef STM32H7A3xxQ
+#define H7_SERIES
+#endif
 #ifdef STM32H7A3xx
+#define H7_SERIES
+#endif
+
+#ifdef H7_SERIES
 #include "fdcan.h"
 #define CAN_HANDLE FDCAN_HandleTypeDef
 #endif
