@@ -13,7 +13,9 @@
 #endif
 
 #ifdef H7_SERIES
+
 #include "fdcan.h"
+
 #define CAN_HANDLE FDCAN_HandleTypeDef
 #endif
 
@@ -22,56 +24,57 @@
 #define CAN_HANDLE CAN_HandleTypeDef
 #endif
 
-typedef struct CanRx {
-    bool isRecent;
-    uint8_t dlc;
-    uint8_t data[8];
-} CanRx;
+typedef struct CanInbox {
+  bool isRecent = false;
+  uint8_t dlc = 0;
+  uint8_t data[8] = {};
+} CanInbox;
 
-uint32_t can_init(CAN_HANDLE* handle);
+typedef struct CanOutbox {
+  bool isRecent = false;
+  uint8_t dlc = 0;
+  uint8_t data[8] = {};
+  float period = 1000000.0f;
+  float _timer = 0;
+} CanOutbox;
+
+uint32_t can_init(CAN_HANDLE *handle);
 
 /**
- * Tell the CAN driver to associate every ID with a period (in ms).\n
- * The period is the maximum rate at which CAN packets of this ID can be pushed to the FIFO. \n
+ * Add a CAN outbox to be sent periodically.\n
+ * The period is the rate at which CAN packets of this ID are sent. \n
  * @param id ID of the CAN packet you want to add
- * @param period Period of the CAN packet in milliseconds
+ * @param outbox Pointer to CanOutbox struct
  */
-void can_addTxBox(uint32_t id, uint32_t period);
+void can_addOutbox(uint32_t id, CanOutbox* outbox);
 
 /**
- * Tell the CAN driver to associate the range of IDs with a period (in ms).\n
- * The period is the maximum rate at which CAN packets of this ID can be pushed to the FIFO. \n
+ * Add a range CAN outboxes to be sent periodically.\n
+ * The period is the rate at which CAN packets of these IDs are sent. \n
  * @param idLow ID of the CAN packet you want to add
  * @param idHigh ID of the CAN packet you want to add
- * @param period Period of the CAN packet in milliseconds
+ * @param outboxes Pointer to array of CanOutbox structs
  */
-void can_addRangeTxBoxes(uint32_t idLow, uint32_t idHigh, uint32_t period);
+void can_addOutboxes(uint32_t idLow, uint32_t idHigh, CanOutbox* outboxes);
 
 /**
- * Tell the CAN driver to copy all incoming packets with a given ID to the given mailbox address.\n
- * Mailbox must be pre-defined (i.e., declared in your code as "static CanRx <name>") .\n
+ * Designate all received packets with the given ID to the be stored in the given mailbox.\n
  * @param id ID of the CAN packet you want to add
- * @param mailbox Pointer to where the incoming packet is stored.
+ * @param inbox Pointer to where the incoming packet is stored.
  */
-void can_addRxBox(uint32_t id, CanRx* mailbox);
+void can_addInbox(uint32_t id, CanInbox *inbox);
 
 /**
- * Tell the CAN driver to copy all incoming packets with a given ID range to the given mailbox array.\n
- * Mailbox is a pointer to an array of CanRx where the first element corresponds to the first ID in the range.\n
+ * Designate all received packets with the given ID range to the be stored in the given mailbox range.\n
  * @param id ID of the CAN packet you want to add
- * @param mailbox Pointer to where the incoming packet is stored.
+ * @param inboxes Pointer to an array of CanInbox
  */
-void can_addRangeRxBoxes(uint32_t idLow, uint32_t idHigh, CanRx* mailboxes);
+void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *inboxes);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
  */
-uint32_t can_processRxFifo();
-
-/**
- * Clear the recency of the mailboxes.
- */
-void can_clearMailboxes();
+uint32_t can_periodic(float deltaTime);
 
 /**
  * Attempts to put in a CAN packet in the Tx FIFO so that it is rate-limited.\n
