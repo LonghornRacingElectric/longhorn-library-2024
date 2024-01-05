@@ -44,18 +44,20 @@ uint32_t can_init(CAN_HANDLE *handle);
  * Add a CAN outbox to be sent periodically.\n
  * The period is the rate at which CAN packets of this ID are sent. \n
  * @param id ID of the CAN packet you want to add
+ * @param period in seconds
  * @param outbox Pointer to CanOutbox struct
  */
-void can_addOutbox(uint32_t id, CanOutbox* outbox);
+void can_addOutbox(uint32_t id, float period, CanOutbox* outbox);
 
 /**
  * Add a range CAN outboxes to be sent periodically.\n
  * The period is the rate at which CAN packets of these IDs are sent. \n
  * @param idLow ID of the CAN packet you want to add
  * @param idHigh ID of the CAN packet you want to add
+ * @param period in seconds
  * @param outboxes Pointer to array of CanOutbox structs
  */
-void can_addOutboxes(uint32_t idLow, uint32_t idHigh, CanOutbox* outboxes);
+void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox* outboxes);
 
 /**
  * Designate all received packets with the given ID to the be stored in the given mailbox.\n
@@ -77,16 +79,14 @@ void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *inboxes);
 uint32_t can_periodic(float deltaTime);
 
 /**
- * Attempts to put in a CAN packet in the Tx FIFO so that it is rate-limited.\n
- * The period of that rate is pre-determined by the ID through can_addTimer or can_addRangeTimers. \n
- * If no rate is set for the ID, the packet is sent without rate-limiting.\n
+ * Attempts to send a CAN packet. There are no restrictions at this point, so only use if necessary.
  * @param id ID of the CAN packet
  * @param dlc Length of the CAN packet
  * @param data Data of the CAN packet
  * @param delta Time in milliseconds between each packet
  * @return 0 if successful, 1 if error, 2 if unsuccessful send
  */
-uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8], uint32_t delta);
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
 
 /**
  * Read a parameter from the packet, specifying which bytes to read.\n

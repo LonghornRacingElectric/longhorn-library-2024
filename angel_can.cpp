@@ -83,7 +83,7 @@ static uint32_t num_to_dlc(uint8_t num) {
  * @param data Data of the CAN packet
  * @return 0 if successful, 1 if unsuccessful
  */
-static uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
+uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
 #ifdef H7_SERIES
   static FDCAN_TxHeaderTypeDef TxHeader;
   TxHeader.Identifier = id;
@@ -142,16 +142,17 @@ uint32_t can_init(CAN_HANDLE *handle) {
 #endif
 }
 
-void can_addOutbox(uint32_t id, CanOutbox *outbox) {
+void can_addOutbox(uint32_t id, float period, CanOutbox *outbox) {
+  outbox->period = period;
   allOutboxes.insert({id, outbox});
 }
 
-void can_addOutboxes(uint32_t idLow, uint32_t idHigh, CanOutbox *outboxes) {
-  float staggerInterval = outboxes->period / ((float)(idHigh - idLow + 1));
+void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox *outboxes) {
+  float staggerInterval = period / ((float)(idHigh - idLow + 1));
   float stagger = 0;
   for (uint32_t i = idLow; i <= idHigh; i++, outboxes++) {
     outboxes->_timer = stagger;
-    can_addOutbox(i, outboxes);
+    can_addOutbox(i, period, outboxes);
     stagger += staggerInterval;
   }
 }
