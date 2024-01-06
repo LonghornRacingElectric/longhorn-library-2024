@@ -131,15 +131,19 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
 }
 
 
-uint32_t can_init(CAN_HANDLE *handle) {
+void can_init(CAN_HANDLE *handle) {
   canHandleTypeDef = handle;
 
 #ifdef H7_SERIES
-  return HAL_FDCAN_Start(canHandleTypeDef);
+  uint32_t error = HAL_FDCAN_Start(canHandleTypeDef);
 #endif
 #ifdef STM32L431xx
-  return HAL_CAN_Start(canHandleTypeDef);
+  uint32_t error = HAL_CAN_Start(canHandleTypeDef);
 #endif
+
+  if(error != HAL_OK) {
+    Error_Handler();
+  }
 }
 
 void can_addOutbox(uint32_t id, float period, CanOutbox *outbox) {

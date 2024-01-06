@@ -4,21 +4,16 @@
 #include <stdint.h>
 #include "angel_can_ids.h"
 
-
 #ifdef STM32H7A3xxQ
 #define H7_SERIES
 #endif
 #ifdef STM32H7A3xx
 #define H7_SERIES
 #endif
-
 #ifdef H7_SERIES
-
 #include "fdcan.h"
-
 #define CAN_HANDLE FDCAN_HandleTypeDef
 #endif
-
 #ifdef STM32L431xx
 #include "can.h"
 #define CAN_HANDLE CAN_HandleTypeDef
@@ -38,7 +33,7 @@ typedef struct CanOutbox {
   float _timer = 0;
 } CanOutbox;
 
-uint32_t can_init(CAN_HANDLE *handle);
+void can_init(CAN_HANDLE *handle);
 
 /**
  * Add a CAN outbox to be sent periodically.\n
@@ -47,7 +42,7 @@ uint32_t can_init(CAN_HANDLE *handle);
  * @param period in seconds
  * @param outbox Pointer to CanOutbox struct
  */
-void can_addOutbox(uint32_t id, float period, CanOutbox* outbox);
+void can_addOutbox(uint32_t id, float period, CanOutbox *outbox);
 
 /**
  * Add a range CAN outboxes to be sent periodically.\n
@@ -57,7 +52,7 @@ void can_addOutbox(uint32_t id, float period, CanOutbox* outbox);
  * @param period in seconds
  * @param outboxes Pointer to array of CanOutbox structs
  */
-void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox* outboxes);
+void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox *outboxes);
 
 /**
  * Designate all received packets with the given ID to the be stored in the given mailbox.\n
