@@ -3,17 +3,17 @@
 
 void led_init() {
 #ifndef STM32H7A3xxQ
-    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
 #endif
 }
 
 static void led_setInt(uint8_t r, uint8_t g, uint8_t b) {
 #ifndef STM32H7A3xxQ
-    TIM2->CCR1 = b;
-    TIM2->CCR2 = r;
-    TIM2->CCR3 = g;
+    TIM5->CCR1 = b;
+    TIM5->CCR2 = r;
+    TIM5->CCR3 = g;
 #endif
 }
 
