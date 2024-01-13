@@ -3,11 +3,14 @@
 
 #include "eeprom.h"
 
+#ifndef XYZ_STRUCT
+#define XYZ_STRUCT
 typedef struct xyz {
   float x;
   float y;
   float z;
 } xyz;
+#endif
 
 static xyz accelData;
 static xyz gyroData;
