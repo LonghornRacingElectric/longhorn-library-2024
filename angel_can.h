@@ -26,7 +26,7 @@ typedef struct CanInbox {
 } CanInbox;
 
 typedef struct CanOutbox {
-  bool isRecent = false;
+  bool isRecent = false; // obsolete
   uint8_t dlc = 0;
   uint8_t data[8] = {};
   float period = 1000000.0f;

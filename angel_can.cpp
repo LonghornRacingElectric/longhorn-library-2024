@@ -217,12 +217,9 @@ static uint32_t can_sendAll(float deltaTime) {
     outbox->_timer += deltaTime;
     if(outbox->_timer >= outbox->period) {
       outbox->_timer = fmod(outbox->_timer, outbox->period);
-      if(outbox->isRecent) {
-        outbox->isRecent = false;
-        uint32_t error = can_send(id, outbox->dlc, outbox->data);
-        if(error != HAL_OK) {
-          return error;
-        }
+      uint32_t error = can_send(id, outbox->dlc, outbox->data);
+      if(error != HAL_OK) {
+        return error;
       }
     }
   }
