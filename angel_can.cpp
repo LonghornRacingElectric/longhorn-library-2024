@@ -1,6 +1,7 @@
 #include "angel_can.h"
 #include <unordered_map>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -120,7 +121,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   static uint32_t TxMailbox;
   uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
   if (error != HAL_OK) {
-    if(error == HAL...) { // TODO TxMailbox full or something like that
+    if(error == HAL_ERROR) { // TODO TxMailbox full or something like that
       // TODO raise fault
     }
       return canHandleTypeDef->ErrorCode;
