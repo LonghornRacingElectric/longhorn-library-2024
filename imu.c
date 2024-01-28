@@ -1,17 +1,17 @@
 #include "imu.h"
 #include <stdint.h>
 #include "main.h"
-#include "../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi.h"
+#include "spi.h"
 #include <stdbool.h>
 
-static uint8_t pData[5]; //not sure i need this?
+static uint8_t pData[6];
 
-extern SPI_HandleTypeDef hspi;
+static SPI_HandleTypeDef *hspi = &hspi2;
 
 /*private functions =====================================================*/
 
-static void write_register(uint8_t* pData, uint8_t Size) {
-    HAL_StatusTypeDef status = HAL_SPI_Transmit(&hspi, pData, Size, HAL_TIMEOUT )
+static void write_register(uint8_t Size) {
+    HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, pData, Size, HAL_TIMEOUT );
     if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
         Error_Handler();
 }
@@ -19,21 +19,21 @@ static void write_register(uint8_t* pData, uint8_t Size) {
 static void write_register1 (uint8_t addr, uint8_t value) {
     pData[0] = addr;
     pData[1] = value;
-    write_register(pData, 2);
+    write_register(2);
 }
 
-static void read_register(uint8_t* pData, uint8_t Size, uint8_t addr) {
+static void read_register(uint8_t Size, uint8_t addr) {
     pData[0] = addr;
-    HAL_SPI_Transmit(&hspi, pData, 1, HAL_TIMEOUT );
+    HAL_SPI_Transmit(hspi, pData, 1, HAL_TIMEOUT );
     pData[0] | 0x08;
-    HAL_StatusTypeDef status = HAL_SPI_Receive(&hspi, pData, Size, HAL_TIMEOUT);
+    HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, pData, Size, HAL_TIMEOUT);
     if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
         Error_Handler();
 }
 
 static void read_register1(uint8_t addr) {
     pData[0] = addr;
-    read_register(pData, 1, addr);
+    read_register(1, addr);
 }
 
 static void scale (){
@@ -68,7 +68,7 @@ bool accel_ready() {
 
 #define OUTX_H_A 0x28
 void imu_getAccel(xyz* vec) {
-    read_register(pData, 6, OUTX_H_A);
+    read_register(6, OUTX_H_A);
 }
 
 bool gyro_ready() {
@@ -79,5 +79,5 @@ bool gyro_ready() {
 
 #define OUTX_H_G 0x22
 void imu_getGyro(xyz* vec) {
-    read_register(pData, 6, OUTX_H_G);
+    read_register(6, OUTX_H_G);
 }
