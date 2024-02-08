@@ -10,26 +10,29 @@ static SPI_HandleTypeDef *hspi = &hspi2;
 
 /*private functions =====================================================*/
 
-static void write_register1 (uint8_t addr, uint8_t value) {
+static void imu_writeregister1 (uint8_t addr, uint8_t value) {
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 0);
     data[0] = addr;
     data[1] = value;
     HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, data, 2, HAL_TIMEOUT );
     if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
         Error_Handler();
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 1);
 }
 
-static void read_register(uint8_t size, uint8_t addr) {
-    data[0] = addr;
+static void imu_readregister(uint8_t size, uint8_t addr) {
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 0);
+    data[0] = addr | 0x80;
     HAL_SPI_Transmit(hspi, data, 1, HAL_TIMEOUT );
-    data[0] | 0x80;
     HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, data, size, HAL_TIMEOUT);
     if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
         Error_Handler();
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 1);
 }
 
-static void read_register1(uint8_t addr) {
+static void imu_readregister1(uint8_t addr) {
     data[0] = addr;
-    read_register(1, addr);
+    imu_readregister(1, addr);
 }
 
 static void imu_scale (){
@@ -44,8 +47,8 @@ static void imu_scale (){
 #define CTRL2_G_REG 0b00001011
 #define CTRL2_G_VAL 0b01010001
 void imu_init() {
-    write_register1(CTRL1_XL_REG, CTRL1_XL_VAL);
-    write_register1(CTRL2_G_REG, CTRL2_G_VAL);
+    imu_writeregister1(CTRL1_XL_REG, CTRL1_XL_VAL);
+    imu_writeregister1(CTRL2_G_REG, CTRL2_G_VAL);
     imu_calibrate();
 }
 
@@ -54,7 +57,7 @@ void imu_calibrate() {
 }
 #define STATUS_REG 0b00011110
 bool accel_ready() {
-    read_register1(STATUS_REG);
+    imu_readregister1(STATUS_REG);
     bool ready = (data[0] & 0x01);
     return ready;
 }
@@ -62,7 +65,7 @@ bool accel_ready() {
 #define OUTX_H_A 0x28
 #define GYRO_LSB 0.13734f
 void imu_getAccel(xyz* vec) {
-    read_register(6, OUTX_H_A);
+    imu_readregister(6, OUTX_H_A);
     int16_t accelX = data[0] | (data[1] << 8);
     vec->x = accelX * GYRO_LSB;
     int16_t accelY = data[2] | (data[3] << 8);
@@ -73,7 +76,7 @@ void imu_getAccel(xyz* vec) {
 }
 
 bool gyro_ready() {
-    read_register1(STATUS_REG);
+    imu_readregister1(STATUS_REG);
     bool ready = (data[0] & 0x02);
     return ready;
 }
@@ -81,7 +84,7 @@ bool gyro_ready() {
 #define OUTX_H_G 0x22
 #define ACCEL_LSB 0.00478728f
 void imu_getGyro(xyz* vec) {
-    read_register(6, OUTX_H_G);
+    imu_readregister(6, OUTX_H_G);
     int16_t buff_gyroX = data[0] + (data[1] << 8);
     vec->x = buff_gyroX * ACCEL_LSB;
     int16_t buff_gyroY = data[2] + (data[3] << 8);
