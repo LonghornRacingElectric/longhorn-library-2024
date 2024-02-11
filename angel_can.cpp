@@ -6,6 +6,7 @@
 using namespace std;
 
 static unordered_map<uint32_t, CanInbox *> allInboxes;
+static unordered_map<CanInbox*, float> allInboxTimeouts;
 static unordered_map<uint32_t, CanOutbox *> allOutboxes;
 static CAN_HANDLE *canHandleTypeDef;
 
@@ -172,6 +173,16 @@ void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *mailboxes) {
   }
 }
 
+void can_addInboxTimeout(CanInbox *mailbox, float timeout) {
+  allInboxTimeouts.insert({mailbox, timeout});
+}
+
+void can_addInboxTimeouts(CanInbox *mailboxes, float timeout, uint32_t numMailboxes) {
+  for (auto i = 0; i < numMailboxes; i++) {
+    can_addInboxTimeout(&mailboxes[i], timeout);
+  }
+}
+
 static uint32_t can_processRxFifo() {
 #ifdef H7_SERIES
   static FDCAN_RxHeaderTypeDef RxHeader;
@@ -185,6 +196,8 @@ static uint32_t can_processRxFifo() {
       copy(RxData, RxData + dlc, this_mailbox->data);
       this_mailbox->isRecent = true;
       this_mailbox->dlc = dlc;
+      this_mailbox->ageSinceRx = 0;
+      this_mailbox->isTimeout = false;
     }
   }
   // If error code is something other than the fifo being empty or full, return error
@@ -204,11 +217,16 @@ static uint32_t can_processRxFifo() {
                 copy(RxData, RxData + dlc, this_mailbox->data);
                 this_mailbox->isRecent = true;
                 this_mailbox->dlc = dlc;
+                this_mailbox->ageSinceRx = 0;
+                this_mailbox->isTimeout = false;
             }
         } else {
             return canHandleTypeDef->ErrorCode;
         }
     }
+    if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_CAN_ERROR_NONE) {
+      return canHandleTypeDef->ErrorCode;
+  }
 #endif
   return HAL_OK;
 }
@@ -222,6 +240,14 @@ static uint32_t can_sendAll(float deltaTime) {
       if(error != HAL_OK) {
         return error;
       }
+    }
+  }
+  for(const auto & [ id, inbox ] : allInboxes) {
+    inbox->ageSinceRx += deltaTime;
+    if(allInboxTimeouts.find(inbox) != allInboxTimeouts.end() &&
+      allInboxTimeouts[inbox] < inbox->ageSinceRx) { // Checks if the age of the inbox is greater than the timeout and that timeout exists
+      inbox->isTimeout = true;
+      inbox->isRecent = false;
     }
   }
   return HAL_OK;

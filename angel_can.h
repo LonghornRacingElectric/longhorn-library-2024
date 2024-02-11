@@ -23,6 +23,8 @@ typedef struct CanInbox {
   bool isRecent = false;
   uint8_t dlc = 0;
   uint8_t data[8] = {};
+  float ageSinceRx = 0;
+  bool isTimeout = false;
 } CanInbox;
 
 typedef struct CanOutbox {
@@ -67,6 +69,21 @@ void can_addInbox(uint32_t id, CanInbox *inbox);
  * @param inboxes Pointer to an array of CanInbox
  */
 void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *inboxes);
+
+/**
+ * Designate a mailbox to have a timeout. If the mailbox is not updated within the timeout, it will be marked as a timeout.\n
+ * @param mailbox Pointer to the mailbox
+ * @param timeout in seconds
+ */
+void can_addInboxTimeout(CanInbox *mailbox, float timeout);
+
+/**
+ * Designate a range of mailboxes to have a timeout. If the mailbox is not updated within the timeout, it will be marked as a timeout.\n
+ * @param mailboxes Pointer to an array of CanInbox
+ * @param timeout in seconds
+ * @param numMailboxes Number of mailboxes in the array
+ */
+void can_addInboxTimeouts(CanInbox *mailboxes, float timeout, uint32_t numMailboxes);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
