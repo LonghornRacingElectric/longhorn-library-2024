@@ -6,7 +6,6 @@
 using namespace std;
 
 static unordered_map<uint32_t, CanInbox *> allInboxes;
-static unordered_map<CanInbox*, float> allInboxTimeouts;
 static unordered_map<uint32_t, CanOutbox *> allOutboxes;
 static CAN_HANDLE *canHandleTypeDef;
 
@@ -163,23 +162,14 @@ void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox *o
   }
 }
 
-void can_addInbox(uint32_t id, CanInbox *mailbox) {
+void can_addInbox(uint32_t id, CanInbox *mailbox, float timeoutLimit) {
+  mailbox->timeLimit = timeoutLimit;
   allInboxes.insert({id, mailbox});
 }
 
-void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *mailboxes) {
+void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *mailboxes, float timeoutLimit) {
   for (uint32_t i = idLow; i <= idHigh; i++) {
-    can_addInbox(i, &mailboxes[i - idLow]);
-  }
-}
-
-void can_addInboxTimeout(CanInbox *mailbox, float timeout) {
-  allInboxTimeouts.insert({mailbox, timeout});
-}
-
-void can_addInboxTimeouts(CanInbox *mailboxes, float timeout, uint32_t numMailboxes) {
-  for (auto i = 0; i < numMailboxes; i++) {
-    can_addInboxTimeout(&mailboxes[i], timeout);
+    can_addInbox(i, &mailboxes[i - idLow], timeoutLimit);
   }
 }
 
@@ -244,8 +234,8 @@ static uint32_t can_sendAll(float deltaTime) {
   }
   for(const auto & [ id, inbox ] : allInboxes) {
     inbox->ageSinceRx += deltaTime;
-    if(allInboxTimeouts.find(inbox) != allInboxTimeouts.end() &&
-      allInboxTimeouts[inbox] < inbox->ageSinceRx) { // Checks if the age of the inbox is greater than the timeout and that timeout exists
+    if(inbox->timeLimit != 0 &&
+      inbox->timeLimit < inbox->ageSinceRx) { // Checks if the age of the inbox is greater than the timeout and that timeout exists
       inbox->isTimeout = true;
       inbox->isRecent = false;
     }

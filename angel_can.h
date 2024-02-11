@@ -24,6 +24,7 @@ typedef struct CanInbox {
   uint8_t dlc = 0;
   uint8_t data[8] = {};
   float ageSinceRx = 0;
+  float timeLimit = 0;
   bool isTimeout = false;
 } CanInbox;
 
@@ -58,32 +59,21 @@ void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox *o
 
 /**
  * Designate all received packets with the given ID to the be stored in the given mailbox.\n
+ * Also sets up timeout feature if a time limit is given.\n
  * @param id ID of the CAN packet you want to add
  * @param inbox Pointer to where the incoming packet is stored.
+ * @param timeoutLimit time where TimeOut is triggered
  */
-void can_addInbox(uint32_t id, CanInbox *inbox);
+void can_addInbox(uint32_t id, CanInbox *inbox, float timeoutLimit = 0);
 
 /**
  * Designate all received packets with the given ID range to the be stored in the given mailbox range.\n
+ * Also sets up timeout feature if a time limit is given.\n
  * @param id ID of the CAN packet you want to add
  * @param inboxes Pointer to an array of CanInbox
+ * @param timeoutLimit time where TimeOut is triggered for all mailboxes
  */
-void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *inboxes);
-
-/**
- * Designate a mailbox to have a timeout. If the mailbox is not updated within the timeout, it will be marked as a timeout.\n
- * @param mailbox Pointer to the mailbox
- * @param timeout in seconds
- */
-void can_addInboxTimeout(CanInbox *mailbox, float timeout);
-
-/**
- * Designate a range of mailboxes to have a timeout. If the mailbox is not updated within the timeout, it will be marked as a timeout.\n
- * @param mailboxes Pointer to an array of CanInbox
- * @param timeout in seconds
- * @param numMailboxes Number of mailboxes in the array
- */
-void can_addInboxTimeouts(CanInbox *mailboxes, float timeout, uint32_t numMailboxes);
+void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *inboxes, float timeoutLimit = 0);
 
 /**
  * Update the corresponding mailboxes, emptying the RxFifo.
