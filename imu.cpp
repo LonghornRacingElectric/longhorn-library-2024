@@ -1,7 +1,8 @@
 #include "imu.h"
-#include <stdint.h>
+
 #include "main.h"
-#include "spi.h"
+
+#include <stdint.h>
 #include <stdbool.h>
 
 static uint8_t data[6];
@@ -11,23 +12,23 @@ static SPI_HandleTypeDef *hspi;
 /*private functions =====================================================*/
 
 static void imu_writeregister1 (uint8_t addr, uint8_t value) {
-    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 0);
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_RESET);
     data[0] = addr;
     data[1] = value;
     HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, data, 2, HAL_TIMEOUT );
-    if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
+    if(status != HAL_OK)
         Error_Handler();
-    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 1);
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_SET);
 }
 
 static void imu_readregister(uint8_t size, uint8_t addr) {
-    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 0);
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_RESET);
     data[0] = addr | 0x80;
     HAL_SPI_Transmit(hspi, data, 1, HAL_TIMEOUT );
     HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, data, size, HAL_TIMEOUT);
-    if(status != HAL_OK)  //idk where HAL_OK is supposed to be defined but guessing it's checking KBSR
+    if(status != HAL_OK)
         Error_Handler();
-    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, 1);
+    HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_SET);
 }
 
 static void imu_readregister1(uint8_t addr) {
