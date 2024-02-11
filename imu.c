@@ -6,7 +6,7 @@
 
 static uint8_t data[6];
 
-
+static SPI_HandleTypeDef *hspi;
 
 /*private functions =====================================================*/
 
@@ -46,8 +46,8 @@ static void imu_scale (){
 //GYRO 208Hz high performance, 4000dps
 #define CTRL2_G_REG 0b00001011
 #define CTRL2_G_VAL 0b01010001
-void imu_init(SPI_HandleTypeDef hspi_ptr) {
-    static SPI_HandleTypeDef *hspi = &hspi_ptr;
+void imu_init(SPI_HandleTypeDef *hspi_ptr) {
+    hspi = hspi_ptr;
     imu_writeregister1(CTRL1_XL_REG, CTRL1_XL_VAL);
     imu_writeregister1(CTRL2_G_REG, CTRL2_G_VAL);
     imu_calibrate();
