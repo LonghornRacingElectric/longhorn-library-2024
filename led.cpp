@@ -1,10 +1,20 @@
 #include "led.h"
 #include "tim.h"
 
+void led_init() {
+#ifndef STM32H7A3xxQ
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
+#endif
+}
+
 static void led_setInt(uint8_t r, uint8_t g, uint8_t b) {
-    TIM2->CCR1 = r;
-    TIM2->CCR2 = g;
-    TIM2->CCR3 = b;
+#ifndef STM32H7A3xxQ
+    TIM5->CCR1 = b;
+    TIM5->CCR2 = r;
+    TIM5->CCR3 = g;
+#endif
 }
 
 void led_set(float r, float g, float b) {
@@ -20,9 +30,9 @@ void led_rainbow(float deltaTime) {
     static float timer = 0;
 
     timer += deltaTime * 3.0f * 255.0f;
-    if(timer > 1.5f) {
+    if(timer > 3.0f) {
         // one cycle every 1.5 seconds
-        timer -= 1.5f;
+        timer = 0.0f;
     } else {
         return;
     }
@@ -37,5 +47,5 @@ void led_rainbow(float deltaTime) {
         b--;
         r++;
     }
-    led_setInt(r, g, b);
+    led_setInt(r/4, g/2, b/2);
 }

@@ -72,6 +72,7 @@ extern uint32_t dash_fault_vector;
 #define FAULT_VCU_NVM 0x00040000
 #define FAULT_VCU_CELL 0x00080000
 #define FAULT_VCU_BSPD 0x00100000
+#define FAULT_VCU_GPS 0x00200000
 
 /**
  * These are external communication faults, where data cannot be properly validated with this enclosure / board through CAN. See car lmao.
@@ -79,10 +80,21 @@ extern uint32_t dash_fault_vector;
 #define FAULT_VCU_INV 0x01000000
 #define FAULT_VCU_HVC 0x02000000
 #define FAULT_VCU_PDU 0x04000000
-#define FAULT_VCU_DASH 0x08000000
-#define FAULT_VCU_WHS_FRONT 0x10000000
-#define FAULT_VCU_UPR_FRONT 0x20000000
-#define FAULT_VCU_WHS_REAR 0x40000000
-#define FAULT_VCU_UPR_REAR 0x80000000
+#define FAULT_VCU_DSH 0x08000000
+#define FAULT_VCU_UNS_FL 0x10000000
+#define FAULT_VCU_UNS_FR 0x20000000
+#define FAULT_VCU_UNS_BL 0x40000000
+#define FAULT_VCU_UNS_BR 0x80000000
+
+// HVC Faults
+#define FAULT_HVC_CCS_HARDWARE 0x00000100
+#define FAULT_HVC_CCS_OVERTEMP 0x00000200
+#define FAULT_HVC_CCS_INCORRECT_VOLTAGE 0x00000400
+#define FAULT_HVC_CCS_CHARGER_OFF 0x00000800
+
+#define FAULT_HVC_CCS 0x01000000
+#define FAULT_HVC_VCU 0x02000000
+#define FAULT_HVC_PDU 0x04000000
+#define FAULT_HVC_DSH 0x08000000
 
 #endif //LONGHORN_LIBRARY_2024_FAULTS_H
