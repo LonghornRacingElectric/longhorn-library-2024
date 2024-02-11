@@ -6,7 +6,7 @@
 
 static uint8_t data[6];
 
-static SPI_HandleTypeDef *hspi = &hspi2;
+
 
 /*private functions =====================================================*/
 
@@ -46,7 +46,8 @@ static void imu_scale (){
 //GYRO 208Hz high performance, 4000dps
 #define CTRL2_G_REG 0b00001011
 #define CTRL2_G_VAL 0b01010001
-void imu_init() {
+void imu_init(uint8_t hspi_number) {
+    static SPI_HandleTypeDef *hspi = &hspi_number;
     imu_writeregister1(CTRL1_XL_REG, CTRL1_XL_VAL);
     imu_writeregister1(CTRL2_G_REG, CTRL2_G_VAL);
     imu_calibrate();
@@ -63,15 +64,15 @@ bool accel_ready() {
 }
 
 #define OUTX_H_A 0x28
-#define GYRO_LSB 0.13734f
+#define ACCEL_LSB 0.00478728f
 void imu_getAccel(xyz* vec) {
     imu_readregister(6, OUTX_H_A);
     int16_t accelX = data[0] | (data[1] << 8);
-    vec->x = accelX * GYRO_LSB;
+    vec->x = accelX * ACCEL_LSB;
     int16_t accelY = data[2] | (data[3] << 8);
-    vec->y = accelY * GYRO_LSB;
+    vec->y = accelY * ACCEL_LSB;
     int16_t accelZ = data[4] | (data[5] << 8);
-    vec->z = accelZ * GYRO_LSB;
+    vec->z = accelZ * ACCEL_LSB;
 
 }
 
@@ -82,14 +83,14 @@ bool gyro_ready() {
 }
 
 #define OUTX_H_G 0x22
-#define ACCEL_LSB 0.00478728f
+#define GYRO_LSB 0.13734f
 void imu_getGyro(xyz* vec) {
     imu_readregister(6, OUTX_H_G);
     int16_t buff_gyroX = data[0] + (data[1] << 8);
-    vec->x = buff_gyroX * ACCEL_LSB;
+    vec->x = buff_gyroX * GYRO_LSB;
     int16_t buff_gyroY = data[2] + (data[3] << 8);
-    vec->y = buff_gyroY * ACCEL_LSB;
+    vec->y = buff_gyroY * GYRO_LSB;
     int16_t buff_gyroZ = data[4] + (data[5] << 8);
-    vec->z = buff_gyroZ * ACCEL_LSB;
+    vec->z = buff_gyroZ * GYRO_LSB;
     //gyroData?
 }
