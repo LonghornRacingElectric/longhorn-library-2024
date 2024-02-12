@@ -162,13 +162,14 @@ void can_addOutboxes(uint32_t idLow, uint32_t idHigh, float period, CanOutbox *o
   }
 }
 
-void can_addInbox(uint32_t id, CanInbox *mailbox) {
+void can_addInbox(uint32_t id, CanInbox *mailbox, float timeoutLimit) {
+  mailbox->timeLimit = timeoutLimit;
   allInboxes.insert({id, mailbox});
 }
 
-void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *mailboxes) {
+void can_addInboxes(uint32_t idLow, uint32_t idHigh, CanInbox *mailboxes, float timeoutLimit) {
   for (uint32_t i = idLow; i <= idHigh; i++) {
-    can_addInbox(i, &mailboxes[i - idLow]);
+    can_addInbox(i, &mailboxes[i - idLow], timeoutLimit);
   }
 }
 
@@ -185,6 +186,8 @@ static uint32_t can_processRxFifo() {
       copy(RxData, RxData + dlc, this_mailbox->data);
       this_mailbox->isRecent = true;
       this_mailbox->dlc = dlc;
+      this_mailbox->ageSinceRx = 0;
+      this_mailbox->isTimeout = false;
     }
   }
   // If error code is something other than the fifo being empty or full, return error
@@ -204,11 +207,16 @@ static uint32_t can_processRxFifo() {
                 copy(RxData, RxData + dlc, this_mailbox->data);
                 this_mailbox->isRecent = true;
                 this_mailbox->dlc = dlc;
+                this_mailbox->ageSinceRx = 0;
+                this_mailbox->isTimeout = false;
             }
         } else {
             return canHandleTypeDef->ErrorCode;
         }
     }
+    if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_CAN_ERROR_NONE) {
+      return canHandleTypeDef->ErrorCode;
+  }
 #endif
   return HAL_OK;
 }
@@ -222,6 +230,14 @@ static uint32_t can_sendAll(float deltaTime) {
       if(error != HAL_OK) {
         return error;
       }
+    }
+  }
+  for(const auto & [ id, inbox ] : allInboxes) {
+    inbox->ageSinceRx += deltaTime;
+    if(inbox->timeLimit != 0 &&
+      inbox->timeLimit < inbox->ageSinceRx) { // Checks if the age of the inbox is greater than the timeout and that timeout exists
+      inbox->isTimeout = true;
+      inbox->isRecent = false;
     }
   }
   return HAL_OK;
