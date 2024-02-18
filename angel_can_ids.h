@@ -84,6 +84,7 @@
 #define HVC_VCU_IMU_ACCEL 0x221 // Stores accel data of imu
 #define HVC_VCU_IMU_GYRO 0x222 // Stores gyro data of imu
 #define HVC_VCU_CCS_INFO 0x223 //Stores CCS output voltage and current
+#define HVC_VCU_FAN_RPM 0x224 // Stores battery fan RPMs
 #define HVC_DSH_FAULT_MSG 0x22F // Stores fault data of hvc
 
 /**
