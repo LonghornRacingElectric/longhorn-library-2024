@@ -6,5 +6,6 @@
 
 void clock_init();
 float clock_getDeltaTime();
+float clock_getTime();
 
 #endif //LONGHORN_LIBRARY_CLOCK_H
