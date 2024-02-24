@@ -2,6 +2,7 @@
 #define LONGHORN_LIBRARY_2024_IMU_H
 
 #include "eeprom.h"
+#include "main.h"
 
 #ifndef XYZ_STRUCT
 #define XYZ_STRUCT
@@ -18,7 +19,7 @@ static xyz gyroData;
 /**
  * Initialize IMU.
  */
-void imu_init();
+void imu_init(SPI_HandleTypeDef *hspi_ptr);
 
 /**
  * Calibrate all 3 axes using gravity as a ground truth.
