@@ -15,3 +15,7 @@ float clock_getDeltaTime() {
     lastTimeRecorded = time;
     return deltaTime;
 }
+
+float clock_getTime() {
+    return ((float)HAL_GetTick()) / 1000.0f;
+}

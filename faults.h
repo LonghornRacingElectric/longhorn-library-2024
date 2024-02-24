@@ -72,6 +72,7 @@ extern uint32_t dash_fault_vector;
 #define FAULT_VCU_NVM 0x00040000
 #define FAULT_VCU_CELL 0x00080000
 #define FAULT_VCU_BSPD 0x00100000
+#define FAULT_VCU_GPS 0x00200000
 
 /**
  * These are external communication faults, where data cannot be properly validated with this enclosure / board through CAN. See car lmao.
