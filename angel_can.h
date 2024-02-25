@@ -111,4 +111,54 @@ uint64_t can_readBytes(const uint8_t data[8], uint8_t start_byte, uint8_t end_by
  */
 void can_writeBytes(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value);
 
+/**
+ * Read a integral value from the packets, based on the given type
+ * @param Inbox Inbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to read from
+ */
+template <typename T>
+T can_readInt(CanInbox *inbox, size_t start_byte) {
+  return *reinterpret_cast<T *>(inbox->data + start_byte);
+}
+
+/**
+ * Write a integral value to the packets, based on the given type
+ * @param Outbox Outbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to write to
+ * @param value Value to write
+ */
+template <typename T>
+void can_writeInt(CanOutbox *outbox, size_t start_byte, T value) {
+  *reinterpret_cast<T *>(outbox->data + start_byte) = value;
+}
+
+/**
+ * Read a floating point value from the packet,
+ * You specify the type to convert the bytes into before converting to float
+ * Converting to float requires multiplying the given type by precision
+ * @param Inbox Inbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to read from
+ * @param precision The amount of decimal places to read
+ */
+template <typename T>
+float can_readFloat(CanInbox *inbox, size_t start_byte, float precision = 1.0f) {
+  T rvalue = *reinterpret_cast<T *>(inbox->data + start_byte);
+  return static_cast<float>(rvalue * precision);
+}
+
+/**
+ * Write a floating point value to the packet.
+ * You specify the type to convert the float into before converting to bytes.
+ * Converting to bytes requires dividing the float by precision
+ * @param Outbox Outbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to write to
+ * @param value Value to write
+ * @param precision The amount of decimal places to write
+ */
+template <typename T>
+void can_writeFloat(CanOutbox *outbox, size_t start_byte, float value, float precision = 1.0f) {
+  T wvalue = static_cast<T>(value / precision);
+  *reinterpret_cast<T *>(outbox->data + start_byte) = wvalue;
+}
+
 #endif //LONGHORN_LIBRARY_2024_CAN_H
