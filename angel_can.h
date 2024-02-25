@@ -91,35 +91,12 @@ uint32_t can_periodic(float deltaTime);
 uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
 
 /**
- * Read a parameter from the packet, specifying which bytes to read.\n
- * This assumes that the packets are little endian, which is the standard set in CM200dz.\n
- * @param data Data of the CAN packet
- * @param start_byte First byte to read
- * @param end_byte Last byte to read
- * @return Value of the parameter
- * @note This supports up to 64 bit integers, and the result must be cast into other types by you.
- */
-uint64_t can_readBytes(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte);
-
-/**
- * Write a parameter to the packet, specifying which bytes to write.\n
- * This assumes that the packets are little endian, which is the standard set in CM200dz.\n
- * @param data Data of the CAN packet
- * @param start_byte First byte to write
- * @param end_byte Last byte to write
- * @param value Value of the parameter
- */
-void can_writeBytes(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value);
-
-/**
  * Read a integral value from the packets, based on the given type
  * @param Inbox Inbox of the CAN packet, which stores the data and dlc
  * @param start_byte First byte to read from
  */
-template <typename T>
-T can_readInt(CanInbox *inbox, size_t start_byte) {
-  return *reinterpret_cast<T *>(inbox->data + start_byte);
-}
+#define canReadInt(T, inbox, start_byte) \
+  (*(reinterpret_cast<T *>((inbox)->data + (start_byte))))
 
 /**
  * Write a integral value to the packets, based on the given type
@@ -127,10 +104,8 @@ T can_readInt(CanInbox *inbox, size_t start_byte) {
  * @param start_byte First byte to write to
  * @param value Value to write
  */
-template <typename T>
-void can_writeInt(CanOutbox *outbox, size_t start_byte, T value) {
-  *reinterpret_cast<T *>(outbox->data + start_byte) = value;
-}
+#define canWriteInt(T, outbox, start_byte, value) \
+  (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = (value))
 
 /**
  * Read a floating point value from the packet,
@@ -140,11 +115,8 @@ void can_writeInt(CanOutbox *outbox, size_t start_byte, T value) {
  * @param start_byte First byte to read from
  * @param precision The amount of decimal places to read
  */
-template <typename T>
-float can_readFloat(CanInbox *inbox, size_t start_byte, float precision = 1.0f) {
-  T rvalue = *reinterpret_cast<T *>(inbox->data + start_byte);
-  return static_cast<float>(rvalue * precision);
-}
+#define canReadFloat(T, inbox, start_byte, precision) \
+  (static_cast<float>(*(reinterpret_cast<T *>((inbox)->data + (start_byte))) * (precision))
 
 /**
  * Write a floating point value to the packet.
@@ -155,10 +127,7 @@ float can_readFloat(CanInbox *inbox, size_t start_byte, float precision = 1.0f) 
  * @param value Value to write
  * @param precision The amount of decimal places to write
  */
-template <typename T>
-void can_writeFloat(CanOutbox *outbox, size_t start_byte, float value, float precision = 1.0f) {
-  T wvalue = static_cast<T>(value / precision);
-  *reinterpret_cast<T *>(outbox->data + start_byte) = wvalue;
-}
+#define canWriteFloat(T, outbox, start_byte, value, precision) \
+  (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = static_cast<T>((value) / (precision)))
 
 #endif //LONGHORN_LIBRARY_2024_CAN_H
