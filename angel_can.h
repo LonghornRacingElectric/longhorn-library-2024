@@ -95,7 +95,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
  * @param Inbox Inbox of the CAN packet, which stores the data and dlc
  * @param start_byte First byte to read from
  */
-#define canReadInt(T, inbox, start_byte) \
+#define can_ReadInt(T, inbox, start_byte) \
   (*(reinterpret_cast<T *>((inbox)->data + (start_byte))))
 
 /**
@@ -104,7 +104,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
  * @param start_byte First byte to write to
  * @param value Value to write
  */
-#define canWriteInt(T, outbox, start_byte, value) \
+#define can_WriteInt(T, outbox, start_byte, value) \
   (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = (value))
 
 /**
@@ -115,7 +115,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
  * @param start_byte First byte to read from
  * @param precision The amount of decimal places to read
  */
-#define canReadFloat(T, inbox, start_byte, precision) \
+#define can_ReadFloat(T, inbox, start_byte, precision) \
   (static_cast<float>(*(reinterpret_cast<T *>((inbox)->data + (start_byte))) * (precision))
 
 /**
@@ -127,7 +127,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
  * @param value Value to write
  * @param precision The amount of decimal places to write
  */
-#define canWriteFloat(T, outbox, start_byte, value, precision) \
+#define can_WriteFloat(T, outbox, start_byte, value, precision) \
   (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = static_cast<T>((value) / (precision)))
 
 #endif //LONGHORN_LIBRARY_2024_CAN_H
