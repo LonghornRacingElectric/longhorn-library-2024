@@ -91,24 +91,43 @@ uint32_t can_periodic(float deltaTime);
 uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
 
 /**
- * Read a parameter from the packet, specifying which bytes to read.\n
- * This assumes that the packets are little endian, which is the standard set in CM200dz.\n
- * @param data Data of the CAN packet
- * @param start_byte First byte to read
- * @param end_byte Last byte to read
- * @return Value of the parameter
- * @note This supports up to 64 bit integers, and the result must be cast into other types by you.
+ * Read a integral value from the packets, based on the given type
+ * @param Inbox Inbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to read from
  */
-uint64_t can_readBytes(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte);
+#define can_readInt(T, inbox, start_byte) \
+  (*(reinterpret_cast<T *>((inbox)->data + (start_byte))))
 
 /**
- * Write a parameter to the packet, specifying which bytes to write.\n
- * This assumes that the packets are little endian, which is the standard set in CM200dz.\n
- * @param data Data of the CAN packet
- * @param start_byte First byte to write
- * @param end_byte Last byte to write
- * @param value Value of the parameter
+ * Write a integral value to the packets, based on the given type
+ * @param Outbox Outbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to write to
+ * @param value Value to write
  */
-void can_writeBytes(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value);
+#define can_writeInt(T, outbox, start_byte, value) \
+  (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = (value))
+
+/**
+ * Read a floating point value from the packet,
+ * You specify the type to convert the bytes into before converting to float
+ * Converting to float requires multiplying the given type by precision
+ * @param Inbox Inbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to read from
+ * @param precision The amount of decimal places to read
+ */
+#define can_readFloat(T, inbox, start_byte, precision) \
+  (static_cast<float>(*(reinterpret_cast<T *>((inbox)->data + (start_byte))) * (precision))
+
+/**
+ * Write a floating point value to the packet.
+ * You specify the type to convert the float into before converting to bytes.
+ * Converting to bytes requires dividing the float by precision
+ * @param Outbox Outbox of the CAN packet, which stores the data and dlc
+ * @param start_byte First byte to write to
+ * @param value Value to write
+ * @param precision The amount of decimal places to write
+ */
+#define can_writeFloat(T, outbox, start_byte, value, precision) \
+  (*(reinterpret_cast<T *>((outbox)->data + (start_byte))) = static_cast<T>((value) / (precision)))
 
 #endif //LONGHORN_LIBRARY_2024_CAN_H

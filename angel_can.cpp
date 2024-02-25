@@ -256,23 +256,3 @@ uint32_t can_periodic(float deltaTime) {
 
   return HAL_OK;
 }
-
-uint64_t can_readBytes(const uint8_t data[8], uint8_t start_byte, uint8_t end_byte) {
-  if (start_byte > end_byte || end_byte > 7 || start_byte > 7) {
-    return 0;
-  }
-  uint64_t value = 0;
-  for (int i = start_byte; i <= end_byte; i++) {
-    value |= static_cast<uint64_t>(data[i]) << (8 * (i - start_byte));
-  }
-  return value;
-}
-
-void can_writeBytes(uint8_t data[8], uint8_t start_byte, uint8_t end_byte, uint64_t value) {
-  if (start_byte > end_byte || end_byte > 7 || start_byte > 7) {
-    return;
-  }
-  for (int i = start_byte; i <= end_byte; i++) {
-    data[i] = static_cast<uint8_t>(value >> (8 * (i - start_byte)));
-  }
-}
