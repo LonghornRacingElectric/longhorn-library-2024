@@ -93,10 +93,10 @@
  */
 
 #define HVC_VCU_CELL_VOLTAGES_START 0x370
-#define HVC_VCU_CELL_VOLTAGES_END 0x39F // 48 assigned packets for voltages
+#define HVC_VCU_CELL_VOLTAGES_END 0x392 // 35 assigned packets for voltages
 #define HVC_VCU_CONTACTOR_STATUS 0x420 //Stores contactor status and general status of HVC
 #define HVC_VCU_CELL_TEMPS_START 0x470 //
-#define HVC_VCU_CELL_TEMPS_END 0x47F // 16 assigned packets for temps
+#define HVC_VCU_CELL_TEMPS_END 0x486 // 23 assigned packets for temps
 
 /**
  * The following are pre-specified CAN-IDs that are used by the TC Charger for .. well .. charging the battery.
