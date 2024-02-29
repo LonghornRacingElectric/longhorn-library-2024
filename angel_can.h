@@ -116,7 +116,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t data[8]);
  * @param precision The amount of decimal places to read
  */
 #define can_readFloat(T, inbox, start_byte, precision) \
-  (static_cast<float>(*(reinterpret_cast<T *>((inbox)->data + (start_byte))) * (precision))
+  (static_cast<float>(*(reinterpret_cast<T *>((inbox)->data + (start_byte))) * (precision)))
 
 /**
  * Write a floating point value to the packet.

@@ -121,7 +121,8 @@
  * [011 0011 ****] OR [100 0011 ****]
  */
 #define PDU_VCU_LVBAT 0x330 //Stores BMS info
-#define PDU_VCU_LV_CURRENTS 0x331 //Stores current info
+#define PDU_VCU_LV_CURRENTS_1 0x331 //Stores current info
+#define PDU_VCU_LV_CURRENTS_2 0x332 //Stores current info
 #define PDU_VCU_STATUS 0x332 //Stores Status of PDU
 
 
