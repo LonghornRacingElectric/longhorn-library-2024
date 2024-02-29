@@ -135,16 +135,16 @@
  * - UNS4: [*** 0100 11**] -> Back Left Sensor
  */
 
-#define UNSFR_VCU_DISP 0x340 //Stores displacement of FR wheel
+#define UNSFR_VCU_MAGNET 0x340 //Stores magnetic field values of FR wheel
 #define UNSFR_VCU_IMU 0x341 //Stores acceleration of FR wheel
 #define UNSFR_DSH_FAULT_MSG 0x343 //Stores fault info of FR unsprung board
-#define UNSFL_VCU_DISP 0x344 //Stores displacement of FL wheel
+#define UNSFL_VCU_MAGNET 0x344 //Stores magnetic field values of FL wheel
 #define UNSFL_VCU_IMU 0x345 //Stores acceleration of FL wheel
 #define UNSFL_DSH_FAULT_MSG 0x347 //Stores fault info of FL unsprung board
-#define UNSBR_VCU_DISP 0x348 //Stores displacement of BR wheel
+#define UNSBR_VCU_MAGNET 0x348 //Stores magnetic field values of BR wheel
 #define UNSBR_VCU_IMU 0x349 //Stores acceleration of BR wheel
 #define UNSBR_DSH_FAULT_MSG 0x34B //Stores fault info of BR unsprung board
-#define UNSBL_VCU_DISP 0x34C //Stores displacement of BL wheel
+#define UNSBL_VCU_MAGNET 0x34C //Stores magnetic field values of BL wheel
 #define UNSBL_VCU_IMU 0x34D //Stores acceleration of BL wheel
 #define UNSBL_DSH_FAULT_MSG_ 0x34F //Stores fault info of BL unsprung board
 
