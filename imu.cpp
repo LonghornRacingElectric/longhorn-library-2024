@@ -56,7 +56,7 @@ void imu_calibrate() {
     // TODO implement
 }
 #define STATUS_REG 0b00011110
-bool accel_ready() {
+bool imu_isAccelReady() {
     imu_readregister1(STATUS_REG);
     bool ready = (data[0] & 0x01);
     return ready;
@@ -75,7 +75,7 @@ void imu_getAccel(xyz* vec) {
 
 }
 
-bool gyro_ready() {
+bool imu_isGyroReady() {
     imu_readregister1(STATUS_REG);
     bool ready = (data[0] & 0x02);
     return ready;

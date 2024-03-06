@@ -19,12 +19,15 @@ static xyz gyroData;
 /**
  * Initialize IMU.
  */
-void imu_init(SPI_HandleTypeDef *hspi_ptr);
+void imu_init(SPI_HandleTypeDef *hspi);
 
 /**
  * Calibrate all 3 axes using gravity as a ground truth.
  */
 void imu_calibrate();
+
+bool imu_isAccelReady();
+bool imu_isGyroReady();
 
 /**
  * Get adjusted acceleration XYZ.
