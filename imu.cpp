@@ -9,11 +9,12 @@ static SPI_HandleTypeDef *hspi;
 
 /*private functions =====================================================*/
 
+#define IMU_TIMEOUT 100
 static void imu_writeregister1 (uint8_t addr, uint8_t value) {
     HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_RESET);
     data[0] = addr;
     data[1] = value;
-    HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, data, 2, HAL_TIMEOUT );
+    HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, data, 2, IMU_TIMEOUT);
     if(status != HAL_OK)
         Error_Handler();
     HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_SET);
@@ -22,8 +23,8 @@ static void imu_writeregister1 (uint8_t addr, uint8_t value) {
 static void imu_readregister(uint8_t size, uint8_t addr) {
     HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_RESET);
     data[0] = addr | 0x80;
-    HAL_SPI_Transmit(hspi, data, 1, HAL_TIMEOUT );
-    HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, data, size, HAL_TIMEOUT);
+    HAL_SPI_Transmit(hspi, data, 1, IMU_TIMEOUT );
+    HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, data, size, IMU_TIMEOUT);
     if(status != HAL_OK)
         Error_Handler();
     HAL_GPIO_WritePin(SPI_CS_IMU_GPIO_Port, SPI_CS_IMU_Pin, GPIO_PIN_SET);
@@ -55,7 +56,7 @@ void imu_init(SPI_HandleTypeDef *hspi_ptr) {
 void imu_calibrate() {
     // TODO implement
 }
-#define STATUS_REG 0b00011110
+#define STATUS_REG 0x1e
 bool imu_isAccelReady() {
     imu_readregister1(STATUS_REG);
     bool ready = (data[0] & 0x01);
