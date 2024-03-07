@@ -39,11 +39,11 @@ static void imu_scale (){
 }
 
 /*public functions =======================================================*/
-//ACCELEROMETER 208Hz high performance
-#define CTRL1_XL_REG 0b00001010
-#define CTRL1_XL_VAL 0b01010000
+//ACCELEROMETER 208Hz high performance, +/-16g
+#define CTRL1_XL_REG 0x10
+#define CTRL1_XL_VAL 0b01010100
 //GYRO 208Hz high performance, 4000dps
-#define CTRL2_G_REG 0b00001011
+#define CTRL2_G_REG 0x11
 #define CTRL2_G_VAL 0b01010001
 void imu_init(SPI_HandleTypeDef *hspi_ptr) {
     hspi = hspi_ptr;
@@ -82,7 +82,7 @@ bool imu_isGyroReady() {
 }
 
 #define OUTX_H_G 0x22
-#define GYRO_LSB 0.13734f
+#define GYRO_LSB 0.0048869219f // rad/s
 void imu_getGyro(xyz* vec) {
     imu_readregister(6, OUTX_H_G);
     int16_t buff_gyroX = data[0] + (data[1] << 8);
@@ -91,5 +91,4 @@ void imu_getGyro(xyz* vec) {
     vec->y = buff_gyroY * GYRO_LSB;
     int16_t buff_gyroZ = data[4] + (data[5] << 8);
     vec->z = buff_gyroZ * GYRO_LSB;
-    //gyroData?
 }
