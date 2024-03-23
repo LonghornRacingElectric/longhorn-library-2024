@@ -48,8 +48,10 @@ static void imu_scale (){
 #define CTRL2_G_VAL 0b01010001
 void imu_init(SPI_HandleTypeDef *hspi_ptr) {
     hspi = hspi_ptr;
-    imu_writeregister1(CTRL1_XL_REG, CTRL1_XL_VAL);
-    imu_writeregister1(CTRL2_G_REG, CTRL2_G_VAL);
+    imu_readregister1(0x0F); // Dummy reads so that the SPI is activated correctly
+    imu_readregister1(0x0F); // Dummy reads so that the SPI is activated correctly
+    imu_writeregister1(CTRL1_XL_REG, CTRL1_XL_VAL); // Actual writes
+    imu_writeregister1(CTRL2_G_REG, CTRL2_G_VAL); // Actual writes
     imu_calibrate();
 }
 
