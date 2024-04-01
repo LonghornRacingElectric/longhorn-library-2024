@@ -118,7 +118,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   TxHeader.DLC = dlc;
   TxHeader.RTR = CAN_RTR_DATA;
 
-  static uint32_t TxMailbox;
+  uint32_t TxMailbox = CAN_TX_MAILBOX0;
   uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
   if (error != HAL_OK) {
     if(error == HAL_ERROR) { // TODO TxMailbox full or something like that
