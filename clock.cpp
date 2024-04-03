@@ -1,21 +1,26 @@
 #include "clock.h"
 
-static uint32_t lastTimeRecorded = 0;
+static uint64_t lastTickRecorded = 0;
+static uint64_t reload;
+static uint32_t clockFreq;
 
 void clock_init() {
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+    clockFreq = HAL_RCC_GetHCLKFreq();
+    reload = clockFreq / 1000;
+    HAL_SYSTICK_Config(reload);
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(SysTick_IRQn);
 }
 
 float clock_getDeltaTime() {
-    uint32_t time = HAL_GetTick();
-    float deltaTime = ((float)(time - lastTimeRecorded)) / 1000.0f;
-    lastTimeRecorded = time;
+    uint64_t tick = (static_cast<uint64_t>(HAL_GetTick()) * reload) + (reload - SysTick->VAL);
+    float deltaTime = ((float)(tick - lastTickRecorded)) / ((float)clockFreq);
+    lastTickRecorded = tick;
     return deltaTime;
 }
 
 float clock_getTime() {
-    return ((float)HAL_GetTick()) / 1000.0f;
+    uint64_t tick = (static_cast<uint64_t>(HAL_GetTick()) * reload) + (reload - SysTick->VAL);
+    return ((float)tick) / ((float)clockFreq);
 }
