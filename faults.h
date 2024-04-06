@@ -43,6 +43,7 @@ extern uint32_t dash_fault_vector;
 
 // VCU FAULTS
 #define FAULT_VCU_CELLULAR_QUEUE_OVERFLOW 0x00000001
+#define FAULT_VCU_INV_PARAMS 0x00000002
 
 
 // HVC Faults
