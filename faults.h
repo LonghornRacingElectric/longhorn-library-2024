@@ -77,8 +77,4 @@ extern uint32_t vcu_fault_vector;
 
 #define CELL_RESET_STATE 0x000F0000 /// Utility bit mask to nullify state
 
-
-
-
-
 #endif //LONGHORN_LIBRARY_2024_FAULTS_H
