@@ -123,7 +123,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
   if (error != HAL_OK) {
     if(error == HAL_ERROR) { // TODO TxMailbox full or something like that
-      // TODO raise fault
+      FAULT_SET(&vcu_fault_vector, FAULT_VCU_CAN_BAD_TX);
     }
       return canHandleTypeDef->ErrorCode;
   }
@@ -189,7 +189,7 @@ static uint32_t can_processRxFifo() {
   }
   // If error code is something other than the fifo being empty or full, return error
   if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_FDCAN_ERROR_NONE) {
-    FAULT_SET(&vcu_fault_vector, FAULT_VCU_CAN);
+    FAULT_SET(&vcu_fault_vector, FAULT_VCU_CAN_BAD_RX);
     return canHandleTypeDef->ErrorCode;
   }
 #endif
@@ -213,6 +213,7 @@ static uint32_t can_processRxFifo() {
         }
     }
     if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_CAN_ERROR_NONE) {
+      FAULT_SET(&vcu_fault_vector, FAULT_VCU_CAN_BAD_RX);
       return canHandleTypeDef->ErrorCode;
   }
 #endif
