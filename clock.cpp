@@ -2,7 +2,7 @@
 
 static uint64_t lastTickRecorded = 0;
 static uint64_t reload;
-static uint32_t clockFreq;
+static uint64_t clockFreq;
 
 void clock_init() {
     clockFreq = HAL_RCC_GetHCLKFreq();
@@ -14,8 +14,11 @@ void clock_init() {
 }
 
 float clock_getDeltaTime() {
-    uint64_t tick = (static_cast<uint64_t>(HAL_GetTick()) * reload) + (reload - SysTick->VAL);
+    uint64_t tick = (reload * HAL_GetTick()) + (reload - SysTick->VAL);
     float deltaTime = ((float)(tick - lastTickRecorded)) / ((float)clockFreq);
+    if(tick < lastTickRecorded) {
+      return 0;
+    }
     lastTickRecorded = tick;
     return deltaTime;
 }
