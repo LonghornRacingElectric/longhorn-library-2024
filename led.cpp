@@ -41,23 +41,27 @@ void led_rainbow(float deltaTime) {
   static uint8_t r = 255, g = 0, b = 0;
   static float timer = 0;
 
+  uint32_t count;
   timer += deltaTime * 3.0f * 255.0f;
   if (timer > 3.0f) {
     // one cycle every 1.5 seconds
-    timer = 0.0f;
+    count = static_cast<uint32_t>(timer / 3.0f);
+    timer = 0;
   } else {
     return;
   }
 
-  if ((r && g) || (!g && !b)) {
-    r--;
-    g++;
-  } else if ((g && b) || (!b && !r)) {
-    g--;
-    b++;
-  } else {
-    b--;
-    r++;
+  for(uint32_t i = 0; i < count; i++) {
+    if ((r && g) || (!g && !b)) {
+      r--;
+      g++;
+    } else if ((g && b) || (!b && !r)) {
+      g--;
+      b++;
+    } else {
+      b--;
+      r++;
+    }
   }
   led_setInt(r / 4, g / 2, b / 2);
 }
