@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-extern uint32_t vcu_fault_vector;
+extern uint32_t faultVector;
 
 /**
  * Set a fault bit in the fault vector.
