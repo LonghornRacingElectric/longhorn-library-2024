@@ -1,4 +1,5 @@
 #include "angel_can.h"
+#include "faults.h"
 #include <unordered_map>
 #include <algorithm>
 #include <cmath>
@@ -100,7 +101,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   uint32_t error = HAL_FDCAN_AddMessageToTxFifoQ(canHandleTypeDef, &TxHeader, data);
   if (error != HAL_OK) {
     if(error & HAL_FDCAN_ERROR_FIFO_FULL) {
-      // TODO raise fault
+      FAULT_SET(&faultVector, FAULT_VCU_CAN_BAD_TX);
     } else if(error & 0xFF) {
       return canHandleTypeDef->ErrorCode;
     }
@@ -122,7 +123,7 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
   if (error != HAL_OK) {
     if(error == HAL_ERROR) { // TODO TxMailbox full or something like that
-      // TODO raise fault
+      FAULT_SET(&faultVector, FAULT_VCU_CAN_BAD_TX);
     }
       return canHandleTypeDef->ErrorCode;
   }
@@ -136,15 +137,11 @@ void can_init(CAN_HANDLE *handle) {
   canHandleTypeDef = handle;
 
 #ifdef H7_SERIES
-  uint32_t error = HAL_FDCAN_Start(canHandleTypeDef);
+  HAL_FDCAN_Start(canHandleTypeDef);
 #endif
 #ifdef STM32L431xx
-  uint32_t error = HAL_CAN_Start(canHandleTypeDef);
+  HAL_CAN_Start(canHandleTypeDef);
 #endif
-
-  if(error != HAL_OK) {
-    Error_Handler();
-  }
 }
 
 void can_addOutbox(uint32_t id, float period, CanOutbox *outbox) {
@@ -192,6 +189,7 @@ static uint32_t can_processRxFifo() {
   }
   // If error code is something other than the fifo being empty or full, return error
   if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_FDCAN_ERROR_NONE) {
+    FAULT_SET(&faultVector, FAULT_VCU_CAN_BAD_RX);
     return canHandleTypeDef->ErrorCode;
   }
 #endif
@@ -215,6 +213,7 @@ static uint32_t can_processRxFifo() {
         }
     }
     if ((canHandleTypeDef->ErrorCode & 0xFF) != HAL_CAN_ERROR_NONE) {
+      FAULT_SET(&faultVector, FAULT_VCU_CAN_BAD_RX);
       return canHandleTypeDef->ErrorCode;
   }
 #endif
