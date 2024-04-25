@@ -13,9 +13,6 @@ typedef struct xyz {
 } xyz;
 #endif
 
-static xyz accelData;
-static xyz gyroData;
-
 /**
  * Initialize IMU.
  */
