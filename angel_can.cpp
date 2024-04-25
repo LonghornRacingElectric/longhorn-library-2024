@@ -119,13 +119,15 @@ uint32_t can_send(uint32_t id, uint8_t dlc, uint8_t *data) {
   TxHeader.DLC = dlc;
   TxHeader.RTR = CAN_RTR_DATA;
 
-  uint32_t TxMailbox = CAN_TX_MAILBOX0;
-  uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
+  uint32_t TxMailbox;
+  volatile uint32_t error = HAL_CAN_AddTxMessage(canHandleTypeDef, &TxHeader, data, &TxMailbox);
   if (error != HAL_OK) {
-    if(error == HAL_ERROR) { // TODO TxMailbox full or something like that
+    if(canHandleTypeDef->ErrorCode & 0x200000) { // full probably
+      HAL_CAN_AbortTxRequest(canHandleTypeDef, 0x7);
       FAULT_SET(&faultVector, FAULT_VCU_CAN_BAD_TX);
-    }
+    } else {
       return canHandleTypeDef->ErrorCode;
+    }
   }
 #endif
 
