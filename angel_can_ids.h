@@ -66,6 +66,7 @@
 #define VCU_PDU_BUZZER 0x111 //Sends out horn info to PDU
 #define VCU_PDU_COOLING 0x112 //Sends out cooling info to PDU
 #define VCU_HVC_COOLING 0x113 //Sends out cooling info to HVC
+#define VCU_HVC_ALLOW_BALANCE 0x114 // whether balancing is allowable
 #define VCU_DASH_INFO1 0x710 //Sends info to be displayed on dash
 #define VCU_DASH_INFO2 0x711 //Sends more info to be displayed on dash
 
