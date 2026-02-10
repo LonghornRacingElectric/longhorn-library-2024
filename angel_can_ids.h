@@ -144,6 +144,7 @@
 #define GPS_FRAME_1 0x600   // lat, long, speed, heading
 #define GPS_FRAME_2 0x601   // hour, minute, seconds, year
 #define GPS_FRAME_3 0x602   // month, day, millis
+// #define GPS_FRAME_4 0x603   // other
 // #define GPS_LATITUDE    0x600 // 6 is free, HVC isn't using it
 // #define GPS_LONGITUDE   0x601
 // #define GPS_SPEED       0x602
