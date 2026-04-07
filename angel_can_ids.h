@@ -49,9 +49,11 @@
 #define INV_MOTOR_POSITIONS 0x0A5 //Stores motor position
 #define INV_CURRENT 0x0A6 //Stores motor velocity
 #define INV_VOLTAGE 0x0A7 //Stores motor voltage
+#define INV_FLUX_INFO 0x0A8 //Stores D/Q axis feedback values
 #define INV_STATE_CODES 0x0AA //Stores inverter state codes
 #define INV_FAULT_CODES 0x0AB //Stores inverter fault codes
 #define INV_TORQUE_TIMER 0x0AC //Stores inverter torque results
+#define INV_MODULATION_INFO 0x0AD //Stores modulation, field weakening, and D/Q current commands
 #define INV_HIGH_SPEED_MSG 0x0B0 //Stores inverter high speed message
 #define VCU_INV_COMMAND 0x0C0 //Stores inverter command
 #define VCU_INV_PARAMS_REQUEST 0x0C1 //Sets inverter parameter r/w

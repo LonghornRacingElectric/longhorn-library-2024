@@ -1,6 +1,10 @@
 #ifndef LONGHORN_LIBRARY_2024_LED_H
 #define LONGHORN_LIBRARY_2024_LED_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void led_init();
 
 /**
@@ -21,5 +25,9 @@ void led_off();
  * @param deltaTime how much time in seconds has passed since last function call
  */
 void led_rainbow(float deltaTime);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //LONGHORN_LIBRARY_2024_LED_H
